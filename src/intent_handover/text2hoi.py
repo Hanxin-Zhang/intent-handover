@@ -4,9 +4,9 @@ Uses the original architecture and 1,000-step DDPM. Refiner and MANO decoding ar
 not part of this lightweight adapter. Output retains the original 99D hand
 representation (translation + 16 six-dimensional rotations), not axis angles.
 """
-import hashlib
-import json
 import numpy as np
+from .artifacts import export_run, write_json
+from .weights import sha256, verify_weights
 
 
 def prepare_points(raw):
@@ -32,12 +32,17 @@ def prepare_points(raw):
 
 
 def predict(args):
-    paths = {name: args.checkpoints / f"{name}.pth" for name in ("texthom", "pointfeat", "contact_estimator")}
-    missing = [str(path) for path in paths.values() if not path.is_file()]
-    if missing:
-        raise ValueError("Missing original Text2HOI checkpoints: " + ", ".join(missing) + ". See docs/text2hoi.md.")
+    with export_run(args.output, ["metadata.json"]):
+        return _predict(args)
+
+
+def _predict(args):
     if args.frames < 1 or args.frames > 150:
         raise ValueError("Frames must be between 1 and 150")
+    if args.hand not in ("left", "right") or not isinstance(args.prompt, str) or not args.prompt.strip():
+        raise ValueError("Prediction requires hand=left/right and a nonempty prompt")
+    verified = verify_weights(args.checkpoints)
+    paths = {name: args.checkpoints / f"{name}.pth" for name in verified}
     sampled, normalized, center, scale = prepare_points(np.load(args.point_cloud, allow_pickle=False))
     import torch
     import clip
@@ -64,7 +69,10 @@ def predict(args):
     clip_model.eval()
     with torch.no_grad():
         # Match upstream's 20-token prompt limit plus start/end tokens.
-        tokens = clip.tokenize([args.prompt], context_length=22, truncate=True).to(device)
+        try:
+            tokens = clip.tokenize([args.prompt], context_length=22, truncate=False).to(device)
+        except RuntimeError as exc:
+            raise ValueError("Prompt exceeds Text2HOI's 20 CLIP-token limit; shorten it (tokens are not words)") from exc
         tokens = torch.cat([tokens, torch.zeros((1,55), dtype=tokens.dtype, device=device)], dim=1)
         text = clip_model.encode_text(tokens).float()
         feature = pointnet(torch.from_numpy(normalized).unsqueeze(0).to(device))
@@ -81,19 +89,18 @@ def predict(args):
                                              active if args.hand == "right" else inactive,
                                              active, device)
     args.output.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(args.output / "prediction.npz", left_hand=left.cpu().numpy(),
-                        right_hand=right.cpu().numpy(), object_pose=obj.cpu().numpy(),
-                        sampled_object_points=sampled, contact_probability=contact_map.cpu().numpy())
-    def digest(path):
-        result = hashlib.sha256()
-        with path.open("rb") as stream:
-            for chunk in iter(lambda: stream.read(1024*1024), b""):
-                result.update(chunk)
-        return result.hexdigest()
-    metadata = {"backend": "original Text2HOI coarse DDPM", "refiner": False, "dataset": "h2o",
+    arrays = dict(left_hand=left.cpu().numpy(), right_hand=right.cpu().numpy(),
+                  object_pose=obj.cpu().numpy(), sampled_object_points=sampled,
+                  contact_probability=contact_map.cpu().numpy())
+    if not all(np.isfinite(value).all() for value in arrays.values()):
+        raise ValueError("Neural prediction contains nonfinite values")
+    np.savez_compressed(args.output / "prediction.npz", **arrays)
+    metadata = {"status": "succeeded", "backend": "original Text2HOI coarse DDPM", "refiner": False, "dataset": "h2o",
                 "hand": args.hand, "prompt": args.prompt, "seed": args.seed,
                 "frames": args.frames, "device": str(device),
                 "representation": "translation(3) + 16 rotations(6); object translation(3) + rotation(6)",
-                "checkpoints_sha256": {name: digest(path) for name,path in paths.items()}}
-    (args.output / "metadata.json").write_text(json.dumps(metadata, indent=2))
+                "checkpoints_sha256": {name: record["sha256"] for name, record in verified.items()},
+                "prediction_sha256": sha256(args.output / "prediction.npz"),
+                "input_point_cloud_sha256": sha256(args.point_cloud)}
+    write_json(args.output / "metadata.json", metadata)
     print(f"Text2HOI prediction: {(args.output / 'prediction.npz').resolve()}")

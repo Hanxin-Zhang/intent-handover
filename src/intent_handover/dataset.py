@@ -5,7 +5,9 @@ from pathlib import Path
 import pickle
 import re
 import numpy as np
-from .geometry import box, pose
+from .geometry import approach_intersection, box, pose
+from .grasp_geometry import local_pad_geometry
+from .artifacts import export_run, write_json
 
 
 def resolve_config(config, project_root=None):
@@ -79,9 +81,26 @@ def bootstrap_scene(name, cloud):
                 hit = center.copy()
                 hit[axis] = lo[axis] if sign < 0 else hi[axis]
                 hit[slide] = lo[slide]+frac*ext[slide]
+                original = pose(hit, r)
+                # Fit before selection: every mode scores the same corrected
+                # candidates, and usage is raycast again on the corrected axis.
+                clearance = float(np.linalg.norm(ext)) + .1
+                origin = hit-z*clearance
+                entry = approach_intersection(boxes, origin, z)
+                fitted = original.copy()
+                fit = {"status": "approach_miss", "original_T_object_gripper": original.tolist()}
+                if entry is not None:
+                    fitted[:3, 3] = entry + .018*z
+                    section = local_pad_geometry(boxes, fitted)
+                    fit["status"] = "empty_pad_window"
+                    if section is not None:
+                        fitted[:3, 3] += section["center_y_m"]*r[:, 1]
+                        fit.update(status="proxy_pad_fit", insertion_m=.018,
+                                   initial_approach_point_object=entry.tolist())
                 candidates.append({"id": f"axis{axis}_{'plus' if sign > 0 else 'minus'}_{index}",
-                    "T_object_gripper": pose(hit, r).tolist(),
-                    "approach_ray_origin_object": (hit-z*.2).tolist()})
+                    "T_object_gripper": fitted.tolist(),
+                    "approach_ray_origin_object": (fitted[:3, 3]-z*clearance).tolist(),
+                    "geometry_preparation": fit})
     return {"schema_version": "handover.scene.v1", "units": "m",
         "provenance": "Local configured object point cloud; generated proxy hand, 30 geometric candidates and receiving-zone annotation; not original paper labels",
         "utterance": f"Pass the {name} to my right hand.",
@@ -91,12 +110,18 @@ def bootstrap_scene(name, cloud):
                    "usage_regions": {"demo_receiving_zone": [receiving], "unreserved_surface": [unreserved]}},
         "receiving_hand": {"center": hand_center.tolist(), "direction": direction.tolist(),
                            "palm_normal": direction.tolist(), "boxes": [hand]},
-        "gripper": {"max_opening_m": .085, "geometry": "parallel-jaw box proxy"},
+        "gripper": {"max_opening_m": .085, "geometry": "parallel-jaw box proxy",
+                    "width_policy": "local_pad_proxy", "grasp_frame": "parallel_jaw_tip"},
         "candidates": candidates,
         "evaluation_split": "S0", "annotation_status": "generated geometry-only demo; functional task split unavailable"}
 
 
 def import_dataset(config, output, project_root=None, object_name="all", scale_to_m=1.):
+    with export_run(output, ["dataset.json"]):
+        return _import_dataset(config, output, project_root, object_name, scale_to_m)
+
+
+def _import_dataset(config, output, project_root, object_name, scale_to_m):
     import trimesh
     settings, config_path, paths = resolve_config(config, project_root)
     if not np.isfinite(scale_to_m) or scale_to_m <= 0:
@@ -150,7 +175,7 @@ def import_dataset(config, output, project_root=None, object_name="all", scale_t
                 "config": str(config_path), "config_sha256": digest(config_path),
                 "cache_sha256": digest(paths["data_obj_pc_path"]), "objects": records, "missing": missing,
                 "annotation_status": "Original object data available; original grasp/region/split labels not found in this config"}
-    (output/"dataset.json").write_text(json.dumps(manifest, indent=2, allow_nan=False))
     if not records:
-        raise ValueError("No requested object files available; see dataset.json")
+        raise ValueError("No requested object files available")
+    write_json(output/"dataset.json", manifest)
     return manifest

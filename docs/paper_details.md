@@ -100,3 +100,12 @@ The original han config's 16 available object point clouds and neural input
 cache can now be imported directly. This restores those local object inputs;
 original triangle meshes, grasp/region annotations and split labels remain
 unavailable in that config. See [dataset import and provenance](dataset.md).
+
+## Geometry audit (0.6.0)
+
+New imports prepare inserted, centred candidates and measure local proxy pad
+width before applying the paper's region constraint and avoidance score. Existing
+scenes retain global projection unless they opt in. Separate original OBJ assets
+were found outside the configured point-cloud layout; they remain local and are
+handled by the companion asset adapter. See [geometry audit](geometry_audit.md)
+for the frame contract, remaining paper gaps and required replay revalidation.

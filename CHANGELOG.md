@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.6.0
+
+- Add `audit-replay` to detect stale selections, changed poses/apertures,
+  receiver retargeting and unsupported asset frame conversions in benchmark trials.
+- Invalidate completion indexes during exports and write JSON atomically, so
+  interrupted reruns cannot expose a previous success over partially new files.
+- Verify official weights in standalone neural inference, reject truncated
+  prompts/nonfinite predictions and bind prediction metadata to output hashes.
+- Return nonzero from selection commands when no feasible grasp exists.
+- Test installed wheels and build source distributions in CI.
+
+- Prepare imported grasps with insertion and local pad centring before all
+  four modes apply region filtering and avoidance ranking.
+- Measure local proxy pad aperture with exact OBB clipping; reject empty and
+  off-centre sections, retaining global projection for existing scenes.
+- Export explicit TCP/aperture semantics, proxy contact evidence and original
+  proposal provenance; document required companion replay integration.
+- Reject approach origins ahead of the TCP and unsupported grasp frames.
+
 ## 0.5.1
 
 - Export a paired method replay index with explicit FS/A1/A2/A3 settings and links to selections, and document original USD/OBJ replay in the companion benchmark.

@@ -65,7 +65,23 @@ Multi-GraspLLM proposals or recovered semantic labels.
 
 Collision geometry is a union of boxes fitted to occupied cells in a 3x3x3
 grid of the original point cloud. Selection uses ray/box surface intersections
-and the paper's width/avoidance score. The full source cloud is used for display.
+and the paper's width/avoidance score. Since 0.6.0, each approach proposal is
+intersected with that proxy, inserted 18 mm along +Z, and centred across the
+local pad section **before** any mode is selected. No lateral X search or
+mode-specific repair is applied. Failed proposals remain visible and are
+rejected by selection. Original transforms are retained in
+`geometry_preparation`. The same 30 prepared candidates enter all modes;
+region intersections and avoidance costs use their final transforms.
+
+These scenes explicitly request `local_pad_proxy` width, using the release's
+parallel-jaw finger footprint. This improves insertion and local aperture
+semantics without introducing Robotiq link calibration into the method package.
+The full source cloud is used for display. The coarse occupied-cell boxes can
+still bridge holes, distort surfaces and overestimate widths; their contact
+points must not be described as measured contacts on the original OBJ mesh.
+Actual mesh fitting and original USD pad verification belong to the benchmark
+asset adapter, subject to [revalidation requirements](geometry_audit.md).
+
 `evaluation_split=S0` is an explicit **demo setting**, so functional-region
 quality is not counted as a benchmark success claim. Users with real labels can
 replace `usage_regions`, candidates and split in the scene contract. Changing

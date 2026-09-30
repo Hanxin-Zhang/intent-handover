@@ -47,6 +47,8 @@ use your calibrated keypoints for a real receiving target.
 Failures overwrite the previous run status, so an old successful run cannot be
 mistaken for the current attempt. A completed prediction with no feasible grasp
 returns a nonzero CLI exit code and records `selection_status` separately.
+Standalone predictions also mark their metadata incomplete during reruns and
+bind it to a SHA-256 of `prediction.npz`; the decoder rejects mismatched files.
 
 In the benchmark environment:
 
@@ -115,3 +117,8 @@ against the static hand triangles in Isaac Sim; planning remains box-based. A on
 working integration example, not a guarantee of realistic contact or the
 paper's quality. The refiner and arbitrary-object grasp generation remain
 outside this release.
+
+For method/replay contract checking, run [audit-replay](workflows.md#verify-replay-preserves-the-method)
+on the benchmark's resolved trial. Imported local-width scenes require companion
+integration beyond benchmark 0.8.0; an original-asset geometric fit alone does
+not preserve the method's constraints or selected ranking.

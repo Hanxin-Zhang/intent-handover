@@ -22,10 +22,11 @@ frame. Transforms are 4x4 row-major JSON arrays used with column vectors:
 `p_object = T_object_gripper @ p_gripper`. Local gripper Y is the closing axis;
 local +Z is the approach direction. TCP is at the finger tips.
 
-The width check projects all provided object boxes onto the closing axis. This
-conservative proxy does not compute a local contact cross-section. The usage
-check tests the supplied approach point; the separate benchmark affordance
-check tests finger-volume intersection, so the two checks can differ.
+`gripper.width_policy` defaults to `global_projection`: project all object
+boxes onto the closing axis, preserving existing scenes. New dataset imports
+use `local_pad_proxy`, described below. The usage check tests the approach
+surface point; the separate benchmark affordance check tests finger-volume
+intersection, so the two checks can differ.
 
 `handover.selection.v1` contains `selected`, all evaluated `candidates`, `mode`,
 `status`, `object_id`, and `provenance`. `selected` is null if no candidate is
@@ -67,8 +68,46 @@ Legacy candidates without the ray origin retain their supplied surface point.
 ## Configured dataset scenes (0.4.0)
 
 Optional `object.surface_points` contains original object-frame XYZ points.
-The HTML report displays these points; collision and width checks still use
+The HTML report displays these points; selection width checks still use
 `object.boxes`. `source_data` records paths, hashes, original counts and scale.
 `annotation_status` identifies generated annotations. `evaluation_split` is
 passed explicitly to the benchmark. Dataset import/export details and generated
 annotation conventions are documented in [dataset.md](dataset.md).
+
+## Local pad geometry (0.6.0)
+
+`gripper.grasp_frame` defaults to and currently only accepts
+`parallel_jaw_tip`. The origin is the midpoint between the finger tips;
+Y closes and +Z approaches. It is **not** a flange, wrist, Robotiq base, or
+USD link origin. The avoidance distance uses this supplied TCP as `p_g`;
+this reference-point choice is explicit because the paper calls it the gripper
+centre without specifying a CAD frame.
+
+With `width_policy: "local_pad_proxy"`, clip the object-box union to the
+release proxy's entire pad footprint, X ∈ [-0.012, 0.012] m and
+Z ∈ [-0.044, 0] m in the gripper frame. `width_m` is the span of all occupied
+pieces along Y inside that window, including disconnected pieces. A broad
+head outside the footprint no longer determines a narrow handle's aperture.
+This is not triangle-mesh width or a physical holding test.
+
+The section must be nonempty and centred about gripper Y=0 within 1 µm.
+Empty/tangent sections (`empty_pad_window`) and offset sections
+(`off_center_pad_section`) are rejected in **all four modes**. Missing section
+width is `null`, not zero. An approach ray is mandatory for this policy.
+For every policy, a supplied ray origin must be outside the object, behind
+the TCP, and on its +Z axis. The region hit and avoidance cost are evaluated
+using the final supplied pose; the selector never moves candidates.
+
+Selection rows add `width_source`, `proxy_contact` (or null) and optional
+`geometry_preparation` provenance. `proxy_contact.contact_points_gripper`
+contains extrema of the clipped box union on the two inner pad planes. Its
+`physical_grasp_verified` is false. Dataset candidates retain the original
+pose and insertion in `geometry_preparation`; these are diagnostics, never
+trusted as precomputed acceptance flags. The selector recomputes geometry.
+
+Selection-level `grasp_contract` records `frame`, `closing_axis`,
+`approach_axis`, `width_policy`, and `max_opening_m`. Consumers must preserve
+the selected pose, aperture and contract or explicitly adapt and revalidate
+them. The benchmark through 0.8.0 does not yet consume this contract; see
+[the concrete integration requirements](geometry_audit.md). Merely accepting
+the JSON does not establish equivalent replay geometry.

@@ -23,7 +23,8 @@ them in `checkpoints/h2o/`. Weights are not included in Git or relicensed here.
 `intent-handover download-weights --verify-only` checks local files against the
 bundled SHA-256 catalog. Downloads are checked before replacing any existing
 file; a corrupt partial download is removed. Use `--force` to replace a corrupt
-existing checkpoint. The `pipeline` command also checks all three hashes.
+existing checkpoint. Both `text2hoi` and `pipeline` check all three hashes
+before loading the models.
 CLIP may download its own pretrained model on first use.
 
 ## Run
@@ -42,6 +43,8 @@ intent-handover text2hoi --checkpoints checkpoints/h2o \
 Use `--device cpu` when CUDA is unavailable; the 1000 diffusion steps are slower.
 `--frames` ranges from 1 to 150. One frame is a lightweight receiving-pose
 example, not a claim that upstream sequence-generation quality is retained.
+Prompts must fit 20 CLIP tokens (which can be more numerous than words);
+overlong prompts are rejected rather than silently truncated.
 The initial adapter targets H2O weights; other dataset architectures/configs
 are not silently mixed. Checkpoint loading is strict and uses `weights_only=True`.
 
@@ -50,7 +53,11 @@ Outputs:
 - `prediction.npz`: left/right hand parameters (1,T,99), object parameters
   (1,T,9), sampled object points, and contact probabilities (1,1024).
 - `metadata.json`: prompt, hand, seed, device, representation and checkpoint
-  SHA-256 hashes.
+  SHA-256 hashes, run status, prediction hash and input-file hash.
+
+Metadata is marked incomplete before each run and failed on errors. The MANO
+bridge rejects unfinished runs and mismatched prediction hashes. Legacy
+metadata without a status/hash remains accepted for older exports.
 
 The 99D hand vector contains translation plus sixteen 6D rotations; it is not
 the 48D MANO axis-angle vector. The refiner is not included. Use the optional `from-prediction` command to decode

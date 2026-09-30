@@ -1,5 +1,39 @@
 # Release validation — 2026-09-30
 
+## 0.6.0 release validation
+
+- 42 tests pass in Python 3.11 / NumPy 1.26.0 and in a fresh Python 3.10
+  environment with NumPy 2.2.6 and the dataset extra. Coverage includes local
+  pad geometry, final-pose constraints/ranking, replay changes, failed reruns,
+  checkpoint/prediction integrity and meaningful CLI exit codes.
+- A clean wheel installation ran all three CPU demos and four-mode ablations
+  outside the checkout with no Torch, MANO, trimesh or simulator installed.
+  After adding the dataset extra, it imported all 16 configured objects,
+  reported the one missing cache entry and exported all 64 paired settings.
+- Every imported setting has a feasible proxy candidate. Widths range from
+  5.28 to 84.61 mm. All 128 selected proxy contacts lie on both an object-box
+  surface and the corresponding inner finger plane, with residual below
+  1e-12 m. FS/A2 selections satisfy the recomputed approach-point region test.
+  These are geometry checks, **not simulation success rates**.
+- Real original-weight Text2HOI inference ran 1,000 DDPM steps on CPU for the
+  imported bottle (seed 0, right hand), decoded the local licensed MANO model,
+  selected a grasp and produced an ergonomic delivery target. The output
+  arrays are finite and prediction/checkpoint hashes are recorded. No GPU
+  workload or Isaac Sim replay was started in this release validation.
+- Read-only integration with benchmark 0.8.0 converted and evaluated the three
+  bundled proxy scenes. All three passed its offline criteria and the new
+  method replay audit. An imported bottle was correctly rejected by the audit:
+  method local width 63.764 mm became benchmark global width 67.686 mm.
+- Wheel and source distributions build successfully and pass `twine check`.
+  The source archive includes documentation, examples and tests. Both archives
+  include the required code licenses and exclude datasets, checkpoints, MANO,
+  generated geometry and local outputs. Package requirements pass `pip check`.
+- Companion replay still needs the integration in [geometry_audit.md](geometry_audit.md)
+  for local aperture and original-asset method equivalence. No original-OBJ
+  contact, force closure, frictional stability or paper user-study claim is
+  inferred from these checks. All private/generated validation artifacts remain
+  in ignored local output directories.
+
 ## 0.1.0 initial release
 
 - Seven CPU unit tests passed: usage ablation, aperture filtering, scoring,

@@ -9,6 +9,7 @@ import numpy as np
 from .core import MODES, select_grasp
 from .demos import sample_surface
 from .report import write_report
+from .artifacts import export_run, write_json
 
 
 def manifest_scenes(path):
@@ -49,18 +50,26 @@ def apply_intent(scene, intent):
 
 def export_selection(scene, output, mode="FS"):
     output = Path(output); output.mkdir(parents=True, exist_ok=True)
-    result = select_grasp(scene, mode)
     name = re.sub(r"[^a-zA-Z0-9_-]", "_", str(scene["object"]["id"]))
+    if mode not in MODES:
+        raise ValueError("Mode must be FS, A1, A2 or A3")
     stem = output/f"{name}_{mode}"
-    stem.with_suffix(".json").write_text(json.dumps(result, indent=2, allow_nan=False))
-    (output/f"{name}_scene.json").write_text(json.dumps(scene, allow_nan=False))
-    cloud = scene["object"].get("surface_points")
-    np.save(output/f"{name}_points.npy", np.asarray(cloud) if cloud is not None else sample_surface(scene), allow_pickle=False)
-    write_report(scene, result, stem.with_suffix(".html"))
+    with export_run(output, [stem.name+".json"]):
+        result = select_grasp(scene, mode)
+        write_json(output/f"{name}_scene.json", scene)
+        cloud = scene["object"].get("surface_points")
+        np.save(output/f"{name}_points.npy", np.asarray(cloud) if cloud is not None else sample_surface(scene), allow_pickle=False)
+        write_report(scene, result, stem.with_suffix(".html"))
+        write_json(stem.with_suffix(".json"), result)
     return result, {"scene": f"{name}_scene.json", "selection": f"{name}_{mode}.json", "report": f"{name}_{mode}.html"}
 
 
 def ablate(scenes, output):
+    with export_run(output, ["experiment.json", "replay.json"]):
+        return _ablate(scenes, output)
+
+
+def _ablate(scenes, output):
     output = Path(output); output.mkdir(parents=True, exist_ok=True)
     ids = [s["object"]["id"] for s in scenes]
     if not ids or len(set(ids)) != len(ids) or any(not re.fullmatch(r"[a-zA-Z0-9_-]+", x) for x in ids):
@@ -79,7 +88,6 @@ def ablate(scenes, output):
         records.append({"object_id": scene["object"]["id"], "scene": files["scene"], "selections": selections})
     manifest = {"schema_version": "handover.experiment.v1", "objects": records, "modes": list(MODES),
                 "scope": "Paired method ablations; all modes use the same object/hand inputs"}
-    (output/"experiment.json").write_text(json.dumps(manifest, indent=2))
     replay = {"schema_version": "handover.method_replay.v1", "record_kind": "settings_replay",
               "source": "Intent-Handover, method and FS/A1/A2/A3 ablation definitions",
               "experiment": "experiment.json", "paper_simulation_success_rate": None,
@@ -88,9 +96,10 @@ def ablate(scenes, output):
                            for mode, flags in MODES.items()},
               "records": [{**row, "scene": f"{row['object_id']}_scene.json",
                            "selection": f"{row['object_id']}_{row['mode']}.json"} for row in rows]}
-    (output/"replay.json").write_text(json.dumps(replay, indent=2))
     with (output/"ablation.csv").open("w", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
+    write_json(output/"replay.json", replay)
+    write_json(output/"experiment.json", manifest)
     return manifest
 
 
@@ -102,7 +111,7 @@ def run_pipeline(scene, checkpoints, mano_models, output, device="cuda", seed=0,
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     state = {"schema_version": "handover.pipeline.v1", "status": "running", "stage": "prepare", "seed": seed}
-    def save(): (output/"pipeline.json").write_text(json.dumps(state, indent=2))
+    def save(): write_json(output/"pipeline.json", state)
     save()
     try:
         scene = apply_intent(scene, intent) if intent is not None else deepcopy(scene)

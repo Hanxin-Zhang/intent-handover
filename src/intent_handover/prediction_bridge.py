@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import numpy as np
 from .geometry import box, inverse, points, pose, unit
+from .weights import sha256
 
 
 def load_legacy_mano(path):
@@ -119,6 +120,10 @@ def geometry_to_scene(scene, vertices, joints, object_parameters, hand, flip_nor
 def decode_prediction(scene, prediction, mano_models, frame=0, flip_normal=False):
     prediction = Path(prediction)
     metadata = json.loads(prediction.with_name("metadata.json").read_text())
+    if metadata.get("status", "succeeded") != "succeeded":
+        raise ValueError("Prediction is incomplete or failed; rerun text2hoi before decoding")
+    if "prediction_sha256" in metadata and sha256(prediction) != metadata["prediction_sha256"]:
+        raise ValueError("Prediction checksum mismatch; metadata and prediction must come from the same run")
     if metadata.get("dataset", "h2o") != "h2o":
         raise ValueError("The bridge currently supports H2O object-frame conventions only")
     hand = metadata["hand"]

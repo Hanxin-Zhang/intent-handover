@@ -8,6 +8,12 @@ from .demos import NAMES, load_scene
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Intent-Handover runnable method demos")
     sub = parser.add_subparsers(dest="command", required=True)
+    audit = sub.add_parser("audit-replay", help="Check whether a benchmark trial preserves the method grasp contract")
+    audit.add_argument("--scene", type=Path, required=True)
+    audit.add_argument("--selection", type=Path, required=True)
+    audit.add_argument("--trial", type=Path, required=True, help="Prefer the resolved *_trial.json saved by replay")
+    audit.add_argument("--delivery", type=Path)
+    audit.add_argument("--output", type=Path, default=Path("outputs/replay_audit.json"))
     weights = sub.add_parser("download-weights", help="Download or verify original Text2HOI weights with SHA-256")
     weights.add_argument("--output", type=Path, default=Path("checkpoints/h2o"))
     weights.add_argument("--force", action="store_true")
@@ -73,6 +79,17 @@ def main(argv=None):
     neural.add_argument("--output", type=Path, default=Path("outputs/text2hoi"))
     args = parser.parse_args(argv)
     try:
+        if args.command == "audit-replay":
+            from .replay_audit import audit_replay
+            from .artifacts import export_run, write_json
+            with export_run(args.output.parent, [args.output.name]):
+                result = audit_replay(json.loads(args.scene.read_text()), json.loads(args.selection.read_text()),
+                    json.loads(args.trial.read_text()), json.loads(args.delivery.read_text()) if args.delivery else None)
+                write_json(args.output, result)
+            print(f"Replay audit {result['status']}: {args.output.resolve()}")
+            if result["issues"]:
+                parser.exit(2, "Contract differences: " + ", ".join(result["issues"]) + "\n")
+            return
         if args.command == "download-weights":
             from .weights import download_weights, verify_weights
             weights = verify_weights(args.output) if args.verify_only else download_weights(args.output, args.force)
@@ -128,12 +145,16 @@ def main(argv=None):
             scenes = ([load_scene(n) for n in (NAMES if args.object == "all" else [args.object])]
                   if args.command == "demo" else [json.loads(args.scene.read_text())])
         args.output.mkdir(parents=True, exist_ok=True)
+        infeasible = False
         for scene in scenes:
             from .workflows import apply_intent, export_selection
             if args.command == "select" and args.intent:
                 scene = apply_intent(scene, json.loads(args.intent.read_text()))
             result, files = export_selection(scene, args.output, args.mode)
             selected = result["selected"]
+            infeasible |= selected is None
             print(f"{scene['object']['id']}: {selected['id'] if selected else result['status']} -> {(args.output/files['report']).resolve()}")
+        if infeasible:
+            parser.exit(2, "No feasible grasp for one or more scenes; inspect the exported rejection reasons\n")
     except (ValueError, KeyError, OSError, ImportError, RuntimeError) as exc:
         parser.exit(2, f"Error: {exc}\n")
