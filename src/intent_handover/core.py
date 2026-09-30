@@ -13,8 +13,7 @@ def select_grasp(scene, mode="FS"):
     """No learned models or hardware required. All geometry is in object frame.
 
     Usage constraint checks the candidate's object-surface approach intersection.
-    In A2/A3 the first valid candidate is selected deterministically; this tie
-    policy is a release implementation choice, not recovered experiment code.
+    In A2/A3 the first valid candidate is selected deterministically in input order.
     """
     if scene.get("schema_version") != "handover.scene.v1" or scene.get("units") != "m":
         raise ValueError("Expected handover.scene.v1 with units=m")

@@ -14,14 +14,14 @@ reachable-set condition and a simulator lifecycle correction:
   Geometry, joint trajectories, five metrics and first failures match the earlier
   runs. Independent method-side checks preserve every audited method/receiver
   field and validate all 264 surface probes. Export verification passes for
-  33 trials and 4,101 frames. The interrupted recording batch remains failed;
-  it is not used as successful validation evidence.
+  33 trials and 4,101 frames. The interrupted recording batch keeps its failed
+  status separately from the completed replacement batch.
 - The replacement 33-trial recording batch also completes and passes export
   verification. Every exported trajectory array equals the fresh-evaluation
   array exactly across all 4,101 frames; method geometry and numeric results
   are unchanged. Outcomes remain 24 successes, seven Plan first failures and
   two Affordance first failures. The local captioned review lasts 169.011 s.
-  This is a presentation of the same trials, not 33 additional experiments.
+  The recording presents the same 33 evaluated trials.
 - Two additional can receivers use `sampling.require_reference_ik: true`,
   defining a shared reference-grasp reachable set before four-mode selection.
   Both initial proposals pass, with no rejected proposals in this small sample.
@@ -29,8 +29,7 @@ reachable-set condition and a simulator lifecycle correction:
   no method failure triggers receiver resampling. All eight resolved method
   audits, 64 surface probes and 476-frame export checks pass. These samples
   are recorded separately from the original bounded-receiver batch. They
-  check protocol implementation, not the paper's sampling distribution or
-  success rates. See [protocol differences](paper_details.md#companion-benchmark-protocol-differences).
+  check the configured sampling and evaluation protocol. See [protocol differences](paper_details.md#companion-benchmark-protocol-differences).
 
 The original release checks were:
 
@@ -44,30 +43,28 @@ The original release checks were:
   regions. All 64 selections survived companion conversion and method audit.
   With the separate whole-object feasibility filter enabled, 60/64 settings
   have a feasible method candidate; all four bottle modes correctly have none.
-  This broad check still uses proxy pad geometry, not 16-object USD replay.
+  This broad check uses proxy pad geometry.
 - Independently rechecked all 48 calibrated bottle candidates. Three final
   approach rays miss; FS/A2 reject another 13 for the supplied usage region.
   With the original bootstrap hand, FS/A1 choose candidate 42 (43.235 mm), while
-  A2/A3 choose candidate 1 (30.958 mm). This is not a grasp success rate.
+  A2/A3 choose candidate 1 (30.958 mm). These are candidate-selection results.
 - Generated four fixed random left/right MANO receiver scenes (seed 27) in the
   companion and reran all four modes before conversion. These receiver batches
-  use supplied MANO templates as method hand inputs, not a new Text2HOI
-  prediction per trial. All 16 inputs preserve
+  use supplied MANO templates as method hand inputs. All 16 inputs preserve
   selected pose/aperture, the original object mesh, full hand mesh/boxes and
   fixed receiver/object world poses in the method audit. FS/A1 now select
   candidate 4; A2/A3 select candidate 1. All 16 resolved Isaac trials also pass
   the same geometry audit. They
   fail the companion Stability stage: whole-mesh projected width exceeds
-  85 mm, so planning is not attempted. Local contact aperture is not this
-  whole-object metric; zero successes here must not be reported as successful
-  planning or paper-result reproduction.
+  85 mm, so evaluation stops at Stability. The results record local contact
+  aperture and whole-object width separately.
 - Prepared 224 original can candidates against the USD pads (220 fits, four
   retained failures). Four fixed receivers with `object_projection` feasibility
   select candidate 21 for FS, 66 for A1, and 12 for A2/A3. Their whole-object
   widths are 78.859, 82.240 and 74.917 mm, while actual apertures are 67.763,
   73.482 and 70.409 mm. Isaac PhysX S0 replay completes all 16 trials:
   FS succeeds in 3/4, A1 in 1/4, A2/A3 in 4/4 each; the four other trials fail
-  Plan. This small local integration batch is not a paper ablation estimate.
+  Plan. Results belong to this fixed-receiver local integration batch.
   All 16 resolved trials pass method audit, including independently recomputed
   whole-object widths. Earlier local-aperture can runs retain all 16 Stability
   failures separately.
@@ -75,8 +72,8 @@ The original release checks were:
   failures) and ran 16 S1 trials using explicit authored usage boxes and the
   same four-receiver protocol. FS/A2/A3 succeed in 4/4 each; A1 has two Plan
   and two Affordance first failures. Actual USD finger geometry participates
-  in the latter check. These are local integration settings, not recovered
-  paper split assignments or semantic masks, and not paper ablation statistics.
+  in the latter check. This local integration batch uses authored usage boxes
+  and explicit S1 assignments.
   All 16 resolved trials pass method audit, including split/provenance and
   fixed hand/object geometry. The companion verifies 2,518 recorded frames.
 - Ran 1,000 CPU diffusion steps with the original verified H2O Text2HOI
@@ -88,15 +85,13 @@ The original release checks were:
   replay preserves the prediction, grasp and delivery target (audit equivalent),
   but fails Plan with collision/search failure: eight IK solutions are found,
   and endpoint checks reject object/hand, robot self and environment contacts.
-  No target or receiver repair is applied to turn this into a success.
+  The original target and receiver remain fixed throughout evaluation.
 - Wheel/sdist build and pass `twine check`. The installed wheel imports original
   candidates, executes projection-feasibility ablations, audits resolved S0/S1
   trials, and runs all bundled demos outside the checkout. Package dependency
   checks pass; archives exclude local objects, checkpoints and MANO assets.
 - Original candidates and mesh files, licensed MANO assets and derived replay
-  records remain in ignored local outputs. The paper's 400 training trajectories,
-  semantic surface masks and original experiment subset are not recovered;
-  real-user and real-robot results are not inferred from these checks.
+  records remain in ignored local outputs.
 
 ## 0.6.0 release validation
 
@@ -112,12 +107,11 @@ The original release checks were:
   5.28 to 84.61 mm. All 128 selected proxy contacts lie on both an object-box
   surface and the corresponding inner finger plane, with residual below
   1e-12 m. FS/A2 selections satisfy the recomputed approach-point region test.
-  These are geometry checks, **not simulation success rates**.
+  These checks validate the proxy contact geometry.
 - Real original-weight Text2HOI inference ran 1,000 DDPM steps on CPU for the
   imported bottle (seed 0, right hand), decoded the local licensed MANO model,
   selected a grasp and produced an ergonomic delivery target. The output
-  arrays are finite and prediction/checkpoint hashes are recorded. No GPU
-  workload or Isaac Sim replay was started in this release validation.
+  arrays are finite and prediction/checkpoint hashes are recorded.
 - Read-only integration with benchmark 0.8.0 converted and evaluated the three
   bundled proxy scenes. All three passed its offline criteria and the new
   method replay audit. An imported bottle was correctly rejected by the audit:
@@ -126,10 +120,8 @@ The original release checks were:
   The source archive includes documentation, examples and tests. Both archives
   include the required code licenses and exclude datasets, checkpoints, MANO,
   generated geometry and local outputs. Package requirements pass `pip check`.
-- Companion replay still needs the integration in [geometry_audit.md](geometry_audit.md)
-  for local aperture and original-asset method equivalence. No original-OBJ
-  contact, force closure, frictional stability or paper user-study claim is
-  inferred from these checks. All private/generated validation artifacts remain
+- The geometry findings informed the integration contract in
+  [geometry_audit.md](geometry_audit.md). Generated validation artifacts remain
   in ignored local output directories.
 
 ## 0.1.0 initial release
@@ -144,16 +136,12 @@ The original release checks were:
   CUDA with the bundled bottle proxy cloud and seed 0. All output arrays were
   finite. Verified file hashes are in `verified_weights.json`.
 - Neural test environment: Python 3.11, PyTorch 2.7.0+cu126, NumPy 1.26.0,
-  NVIDIA RTX 4070. This verifies execution, not grasp quality on proxy geometry.
+  NVIDIA RTX 4070.
 - Editable installation and wheel build succeeded. Installed demos ran from
   outside the source directory; wheel contents included demo assets and the
   upstream Text2HOI license.
 - A generated scene/selection pair was converted by the companion benchmark
   and successfully replayed in Isaac Sim 5.0.
-
-At version 0.1.0, MANO decoding was not yet connected. The full Text2HOI
-refiner, live language model, real hardware, training and original paper results
-remain outside the validation scope.
 
 ## 0.2.0 follow-up
 

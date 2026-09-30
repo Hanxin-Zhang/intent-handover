@@ -95,5 +95,5 @@ def import_panda_candidates(scene, annotations, control_points, mesh=None, cente
         "annotations_sha256": sha256(annotations), "control_points_sha256": sha256(control_points),
         "count": len(candidates), "regions": region_counts, "T_panda_gripper": base_tip.tolist(),
         "region_labels_used_as_surface_masks": False, "paper_candidate_subset_verified": False}
-    result["provenance"] = "Local annotated Panda proposals converted before ranking; original object inputs, supplied usage geometry and hand; not recovered paper trials"
+    result["provenance"] = "Local annotated Panda proposals converted before ranking; original object inputs, supplied usage geometry and hand"
     return result

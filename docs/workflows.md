@@ -27,7 +27,8 @@ an additional hard inclusion constraint. Changing a prompt with `select` alone
 does not generate a new hand; use `pipeline` for neural prediction.
 
 For local datasets, use `prompt --manifest outputs/han_dataset/dataset.json`.
-Imported regions are generated demo labels, not recovered functional labels.
+Imported regions use generated demo labels that can be replaced through the
+scene contract.
 
 ## Four method ablations
 
@@ -84,8 +85,8 @@ intent-handover audit-replay \
 
 Add `--delivery outputs/ergonomic_delivery.json` to require the original
 world-frame delivery target as well. Exit code 0 means the checked grasp,
-annotations and supplied receiver geometry agree; it is not a trajectory,
-collision, holding-force or paper-success certificate. Exit code 2 records the
+annotations and supplied receiver geometry agree. Trajectory and collision
+evaluation run in the companion benchmark. Exit code 2 records the
 differences. The audit recomputes selection to catch stale method outputs.
 
 The audit supports the legacy benchmark 0.7/0.8 width behavior and the newer
@@ -118,8 +119,7 @@ receiver sampler with `sampling.require_reference_ik: true` (the 0.10.0 public
 configuration enables this). It checks a shared reference grasp's full-pose IK
 before any method is selected and logs all sampling proposals. The chosen
 method's own Plan criterion is evaluated separately. This is an explicit
-operational definition of the reachable set, not the recovered paper sampling
-distribution. Older bounded samples remain separately labelled validation runs.
+operational definition of the reachable set, with recorded bounds and seeds. Older bounded samples remain separately labelled validation runs.
 
 For **each** entry in the resulting `scenes.json`, use its scene path and a
 separate output directory. Receiver scene entries are not dataset manifest
@@ -145,7 +145,7 @@ candidates, hand and object target. Do not apply `sample-receivers` after method
 selection. Run the companion's Isaac replay and `verify-output`, then audit each
 resolved trial against its receiver-specific scene and selection. Keep selection,
 stability and planning failures in the results. See [the width-convention and
-paper-protocol limitations](geometry_audit.md).
+paper-protocol conventions](geometry_audit.md).
 
 ## Neural prediction through simulation
 

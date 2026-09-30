@@ -111,9 +111,9 @@ def geometry_to_scene(scene, vertices, joints, object_parameters, hand, flip_nor
         "direction": direction.tolist(), "palm_normal": normal.tolist(), "boxes": proxies,
         "mesh": {"vertices": vertices.tolist()},
         "provenance": "Original H2O Text2HOI coarse prediction decoded with user-provided MANO"}
-    result["provenance"] = "Procedural object/candidates with a Text2HOI-predicted MANO receiving hand; not a paper trial"
+    result["provenance"] = "Procedural object/candidates with a Text2HOI-predicted MANO receiving hand"
     if "source_data" in scene:
-        result["provenance"] = "Configured local object point cloud, generated candidates/region and Text2HOI-predicted MANO hand; not original paper annotations"
+        result["provenance"] = "Configured local object point cloud, generated candidates/region and Text2HOI-predicted MANO hand"
     return result
 
 

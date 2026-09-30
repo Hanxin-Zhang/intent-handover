@@ -42,8 +42,8 @@ r2handoversim demo --trial outputs/trial.json --headless
 ```
 
 Conversion places the selected object/gripper relation at the demo's fixed UR5e
-goal and positions the receiving hand relative to it. It does not plan an
-arbitrary Cartesian target or claim neural hand-pose fidelity.
+goal and positions the receiving hand relative to it. Supply `--delivery` for
+a computed world-frame target.
 
 ## Optional predicted-hand geometry (0.2.0)
 
@@ -88,7 +88,7 @@ release proxy's entire pad footprint, X ∈ [-0.012, 0.012] m and
 Z ∈ [-0.044, 0] m in the gripper frame. `width_m` is the span of all occupied
 pieces along Y inside that window, including disconnected pieces. A broad
 head outside the footprint no longer determines a narrow handle's aperture.
-This is not triangle-mesh width or a physical holding test.
+This policy measures the aperture of the clipped box geometry.
 
 The section must be nonempty and centred about gripper Y=0 within 1 µm.
 Empty/tangent sections (`empty_pad_window`) and offset sections
@@ -108,7 +108,7 @@ trusted as precomputed acceptance flags. The selector recomputes geometry.
 Selection-level `grasp_contract` records `frame`, `closing_axis`,
 `approach_axis`, `width_policy`, and `max_opening_m`. Consumers must preserve
 the selected pose, aperture and contract or explicitly adapt and revalidate
-them. Legacy benchmark versions through 0.8.0 do not consume this contract.
+them. Use R2HandoverSim 0.10.0 or newer for the integrated asset contract.
 The integrated consumer carries explicit aperture and method evidence; use
 `audit-replay` to verify the actual trial rather than inferring compatibility
 from successful JSON loading.
@@ -118,8 +118,7 @@ from successful JSON loading.
 Optional `object.mesh` contains finite `vertices` (N×3) and integer triangle
 `faces` (M×3), in metres in the object frame. When present, an outside approach
 ray is required and its nearest triangle intersection replaces the box hit.
-Usage regions still use supplied boxes; triangle geometry does not infer
-semantic masks. `receiving_hand.mesh` uses the same object frame.
+Usage regions use the supplied box annotations. `receiving_hand.mesh` uses the same object frame.
 
 `width_policy: "asset_mesh_pad"` requires the mesh and
 `gripper.geometry_contract`. The companion's `handover.asset_gripper.v1`

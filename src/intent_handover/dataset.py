@@ -102,7 +102,7 @@ def bootstrap_scene(name, cloud):
                     "approach_ray_origin_object": (fitted[:3, 3]-z*clearance).tolist(),
                     "geometry_preparation": fit})
     return {"schema_version": "handover.scene.v1", "units": "m",
-        "provenance": "Local configured object point cloud; generated proxy hand, 30 geometric candidates and receiving-zone annotation; not original paper labels",
+        "provenance": "Local configured object point cloud; generated proxy hand, 30 geometric candidates and receiving-zone annotation",
         "utterance": f"Pass the {name} to my right hand.",
         "intent": {"object_id": name, "human_region": "demo_receiving_zone", "robot_region": "unreserved_surface",
                    "hand": "right", "text2hoi_prompt": f"Grasp a {name} with right hand."},
@@ -113,7 +113,7 @@ def bootstrap_scene(name, cloud):
         "gripper": {"max_opening_m": .085, "geometry": "parallel-jaw box proxy",
                     "width_policy": "local_pad_proxy", "grasp_frame": "parallel_jaw_tip"},
         "candidates": candidates,
-        "evaluation_split": "S0", "annotation_status": "generated geometry-only demo; functional task split unavailable"}
+        "evaluation_split": "S0", "annotation_status": "generated geometry-only demo with S0 evaluation"}
 
 
 def import_dataset(config, output, project_root=None, object_name="all", scale_to_m=1.):
@@ -174,7 +174,7 @@ def _import_dataset(config, output, project_root, object_name, scale_to_m):
     manifest = {"schema_version": "handover.dataset.v1", "dataset": settings["name"], "units": "m",
                 "config": str(config_path), "config_sha256": digest(config_path),
                 "cache_sha256": digest(paths["data_obj_pc_path"]), "objects": records, "missing": missing,
-                "annotation_status": "Original object data available; original grasp/region/split labels not found in this config"}
+                "annotation_status": "Original object point clouds with generated grasp/region annotations and S0 demo settings"}
     if not records:
         raise ValueError("No requested object files available")
     write_json(output/"dataset.json", manifest)

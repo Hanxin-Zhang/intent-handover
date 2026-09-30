@@ -1,6 +1,6 @@
 """Read-only checks of legacy and explicit method-grasp replay contracts.
 
-No simulator dependency, retargeting, grasp repair or physics certification.
+Compares grasp, annotation and receiver geometry using NumPy.
 Use the resolved *_trial.json exported by the simulator for post-run checks.
 """
 import numpy as np
@@ -136,7 +136,7 @@ def audit_replay(scene, selection, trial, delivery=None):
               close(trial["target_T_world_gripper"], delivery["T_world_gripper"]), "delivery_target_changed")
     return {"schema_version": "handover.replay_audit.v1", "units": "m",
             "status": "equivalent" if not issues else "not_equivalent",
-            "scope": "Grasp, annotations and supplied receiver geometry; not trajectory or physics validation",
+            "scope": "Grasp, annotations and supplied receiver geometry",
             "object_id": current["object_id"], "mode": current["mode"], "issues": issues,
             "expected_width_m": expected["width_m"], "replay_width_m": actual_width,
             "expected_width_source": current["grasp_contract"]["width_policy"], "replay_width_source": width_source,

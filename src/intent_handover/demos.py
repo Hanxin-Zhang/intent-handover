@@ -62,7 +62,7 @@ def build_scene(name):
                    for y in (-.027, -.009, .009, .027)]
     hand_boxes += [box([-.085, -.047, c1[2]], [.018, .008, .01], label="thumb")]
     return {"schema_version": "handover.scene.v1", "units": "m",
-            "provenance": "Procedural release demo; not a paper trial or Text2HOI prediction",
+            "provenance": "Procedural release demo with fixed receiving-hand geometry",
             "utterance": utterance,
             "intent": {"object_id": name, "human_region": region1, "robot_region": region2,
                        "hand": "right", "text2hoi_prompt": f"Grasp a {name} with right hand."},

@@ -1,7 +1,7 @@
 """Small NumPy geometry kernel. Column-vector transforms, metres, right handed.
 
-The demo uses unions of oriented boxes. These are explicit proxy geometries,
-not robot CAD or MANO meshes. Touching counts as intersection.
+The demo uses unions of oriented boxes as explicit proxy geometries.
+Touching counts as intersection.
 """
 import itertools
 import numpy as np

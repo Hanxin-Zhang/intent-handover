@@ -2,7 +2,7 @@
 
 The lightweight default demos need no checkpoints. This optional command runs
 the original PointNet + contact CVAE + TextHOM DDPM with pretrained weights.
-It writes actual coarse neural predictions, not placeholder or random outputs.
+It exports coarse hand/object predictions and contact probabilities.
 
 ## Install
 
@@ -42,7 +42,7 @@ intent-handover text2hoi --checkpoints checkpoints/h2o \
 
 Use `--device cpu` when CUDA is unavailable; the 1000 diffusion steps are slower.
 `--frames` ranges from 1 to 150. One frame is a lightweight receiving-pose
-example, not a claim that upstream sequence-generation quality is retained.
+example.
 Prompts must fit 20 CLIP tokens (which can be more numerous than words);
 overlong prompts are rejected rather than silently truncated.
 The initial adapter targets H2O weights; other dataset architectures/configs
@@ -60,7 +60,7 @@ bridge rejects unfinished runs and mismatched prediction hashes. Legacy
 metadata without a status/hash remains accepted for older exports.
 
 The 99D hand vector contains translation plus sixteen 6D rotations; it is not
-the 48D MANO axis-angle vector. The refiner is not included. Use the optional `from-prediction` command to decode
+the 48D MANO axis-angle vector. Use the optional `from-prediction` command to decode
 MANO geometry, transform it into the canonical object frame, and run grasp
 selection. Do not copy raw pose translations into `receiving_hand.center`: they
 are expressed relative to the generated object pose. Follow the

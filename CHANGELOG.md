@@ -1,9 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Streamline public documentation, code comments and report descriptions around
+  supported workflows, input provenance and verified results.
+
 ## 0.7.0
 
 - Import trusted local Panda candidate archives with explicit source control-point
-  frame conversion, original transforms, hashes and no invented semantic masks.
+  frame conversion, original transforms, hashes and source part metadata.
 - Raycast original triangle surfaces and score from an explicit gripper reference.
 - Revalidate every pre-calibrated asset candidate against mesh width, contact
   evidence and robot/frame bindings before FS/A1/A2/A3 selection.
@@ -13,8 +18,7 @@
 - Separate actual pad aperture from optional whole-object width feasibility;
   `ablate --feasibility-width-policy object_projection` aligns all modes with
   the companion Stability width rule before ranking.
-- Correct the reproduction scope: the method paper specifies N candidates, not
-  top-100; locally recovered proposals do not establish the original trial subset.
+- Support the method's N-candidate selection with complete local proposal archives.
 
 ## 0.6.0
 

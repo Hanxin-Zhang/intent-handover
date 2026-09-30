@@ -1,8 +1,8 @@
 """Optional original-weight Text2HOI coarse inference, without renderer/ROS/MANO.
 
-Uses the original architecture and 1,000-step DDPM. Refiner and MANO decoding are
-not part of this lightweight adapter. Output retains the original 99D hand
-representation (translation + 16 six-dimensional rotations), not axis angles.
+Uses the original architecture and 1,000-step DDPM. Output retains the original
+99D hand representation (translation + 16 six-dimensional rotations). The
+prediction bridge handles conversion to MANO geometry.
 """
 import numpy as np
 from .artifacts import export_run, write_json

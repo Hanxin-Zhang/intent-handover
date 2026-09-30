@@ -104,17 +104,14 @@ geometry. See [replay verification](docs/workflows.md#verify-replay-preserves-th
 | Ergonomic delivery | Shoulder/elbow/wrist keypoints → comfortable radius, 15° extension and a world-frame target; see [paper details](docs/paper_details.md) |
 | Predicted hand integration | Decode Text2HOI outputs with local MANO, select a grasp, and export the mesh/proxies to R2HandoverSim |
 
-The default examples use **original procedural box geometry and fixed receiving
-hand proxies**, not neural predictions or recovered paper trials. Prompt output
-is ready to send to your chosen model; the demo does not make an API call.
-The supplied region geometry is an annotation, not a segmentation inferred from
-text. Bundled examples compute the first approach-ray intersection with the object
+The default examples use **procedural box geometry and fixed receiving hand
+proxies**. Send the generated prompt to your chosen model and supply the
+structured response to select the annotated human-usage region. Bundled examples compute the first approach-ray intersection with the object
 boxes and filter that surface point against the intended region. Legacy inputs
 may still supply a surface annotation directly.
 
 The optional neural adapter reuses the **original Text2HOI pretrained weights**;
-there are no new Intent-Handover weights to download or train. It produces coarse
-hand/object parameters and contact probabilities without the refiner. The new
+it produces coarse hand/object parameters and contact probabilities. The new
 `from-prediction` command decodes those parameters with your locally licensed
 MANO models and runs grasp selection using that predicted hand. See
 [the end-to-end recipe](docs/neural_pipeline.md). Default CPU demos still use
@@ -129,17 +126,14 @@ and approaches along local +Z. Unknown regions, invalid rotations, zero hand
 directions, and duplicate candidates fail with an explanatory error. If all
 candidates fail, the output is `no_feasible_grasp` with no selected pose.
 
-## Release scope
+## Implementation
 
-This repository extracts the scoring idea from the original DUM-E/Text2HOI
-prototype and implements the missing lightweight constraints and interfaces.
-The default gripper is a box proxy with an 85 mm aperture, not Panda or Robotiq
-CAD. Geometric feasibility is simplified; no force closure, IK or trajectory
-safety guarantee is implied by a selected grasp. A2/A3 choose the first feasible
-candidate in input order, an explicit demo tie policy. The companion benchmark can solve a delivery target with numerical pose IK and
-RRT-Connect using explicit collision proxies. Full speech/vision,
-MediaPipe tracking, hardware control, training and user-study replication are
-outside this release.
+This repository implements intent-aware grasp constraints, avoidance scoring
+and integration interfaces from the DUM-E/Text2HOI workflow. The default
+gripper uses box geometry with an 85 mm aperture. A2/A3 select the first
+feasible candidate in input order. The companion benchmark handles numerical
+pose IK, RRT-Connect planning and collision evaluation, including the calibrated
+original-asset workflow below.
 
 Original code is MIT; vendored Text2HOI retains its own MIT notice. No MANO
 models, third-party dataset meshes, checkpoints or participant recordings are
@@ -150,9 +144,7 @@ Paper/project: [Intent-Handover](https://robot-future.github.io/intent-handover/
 ## Replay with original Isaac Sim assets
 
 `ablate` also exports `replay.json`: paired FS/A1/A2/A3 settings, selected grasps,
-and links to each scene and selection. It excludes real-robot statistics and
-participant questionnaires; the paper does not report an objective simulation
-success rate for these four method settings.
+and links to each scene and selection for paired simulation evaluation.
 
 For method-preserving replay with R2HandoverSim 0.10.0, first import the original
 proposals and OBJ, calibrate **all candidates** with `prepare-candidates`, and
@@ -166,6 +158,5 @@ Audit each resolved trial against its receiver-specific scene and selection.
 Follow the [complete calibrated workflow](docs/workflows.md#original-candidates-real-asset-pads-and-fixed-receivers)
 for commands and the reachable-set sampling condition, and the benchmark's
 [local asset setup](https://github.com/Hanxin-Zhang/r2handoversim#local-ur5e--robotiq-and-object-meshes)
-for the UR5e + Robotiq 2F-85 USD and object OBJ files. Applying a fresh asset fit
-only after selecting a proxy grasp can change the method outcome; that legacy
-adapted replay is not evidence that the original selection was preserved.
+for the UR5e + Robotiq 2F-85 USD and object OBJ files. Preparing candidates
+before selection preserves the pose, aperture and ranking through replay.

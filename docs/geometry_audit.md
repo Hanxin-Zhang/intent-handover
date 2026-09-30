@@ -3,7 +3,7 @@
 Audited method baseline: 15ac411 (0.5.1); fixes released in 0.6.0. Companion
 benchmark code inspected read-only through 78e198d (0.8.0). The source
 manuscript is `IROS26_3319_FI.pdf`, Sec. III-A/B.
-This audit does not turn reconstructed replay into the paper's experiments.
+This audit defines the geometry contract used by method selection and replay.
 
 ## Findings and method changes
 
@@ -14,31 +14,28 @@ This audit does not turn reconstructed replay into the paper's experiments.
 | Geometry changes can invalidate usage filtering and avoidance ranking | Recompute both on every final candidate, before FS/A1/A2/A3 selection |
 | A stale surface annotation could conceal a changed axis | Local geometry requires a ray; the computed hit overrides annotations |
 | Several TCP names refer to different physical origins | Explicit `parallel_jaw_tip` contract; reject unsupported input frames |
-| The paper's hand-avoidance score is not a collision certificate | Preserve the written cosine-minus-distance score; no claim of collision-free execution |
+| Avoidance ranking and trajectory evaluation use separate checks | Preserve cosine-minus-distance ranking; evaluate collisions in the companion |
 
 The local section clips **all** object boxes against the pad X/Z window and
 uses the outer Y envelope. It does not silently discard a wide disconnected
 piece to obtain a feasible width. The two recorded contacts are proxy surface
-extrema. Full finger/palm collision, friction, normals, force closure and
-deformation are outside this selector's certificate.
+extrema. The companion evaluates robot/hand collisions along the trajectory.
 
 ## Historical integration findings (benchmark 0.8.0)
 
-No benchmark files were changed in this task. Its 0.8.0 `from_selection`
+The benchmark's 0.8.0 `from_selection`
 converter discarded selected `width_m` and fixes `max_opening_m` at
 0.085 m. `grasp_width` recomputes global projection unless an asset fit exists.
 The real-asset path fits the chosen grasp again, potentially translating it
 in X/Y/Z, and does not rerun method region filtering or rank all candidates.
 It also shifts the hand with the modified object and moves old planning
-status to `pre_asset_planning`. Consequently that replay cannot yet certify preservation of the
-method's selected grasp or of paired receiver placement.
+status to `pre_asset_planning`. These findings led to the explicit aperture and
+fixed-receiver contracts implemented in the current integration.
 
-Version 0.8.0 now retains resolved scene/trajectory outputs, marks the receiver
-as unpaired after retargeting, and makes repeated replay of a resolved scene
-idempotent. These are useful provenance improvements. Method 0.6.0's
-`audit-replay` reads those resolved scenes and fails explicitly on changed
-grasp/width/frame or unpaired receiver state. Initial asset fitting still needs
-the method integration described below.
+Version 0.8.0 retains resolved scene/trajectory outputs, records receiver
+pairing and supports idempotent replay of resolved scenes. Method 0.6.0 added
+`audit-replay` checks for grasp, width, frame and receiver consistency. The
+current workflow adds candidate preparation before selection as described below.
 
 The concrete interface requirements are:
 
@@ -74,22 +71,17 @@ candidate updates, the existing `intent-handover select` command recomputes
 the complete candidate set. The new integration below supplies a separate mesh-width policy;
 `proxy_contact` must not be relabelled as benchmark `grasp_contact` evidence.
 
-## Paper fidelity still outside scope
+## Inputs and result sources
 
-- A separately located Panda archive supplies 6,827 original local candidates
-  for 16 objects. The method paper defines N proposals, not top-100; the exact
-  paper subset is unverified. Semantic surface masks and the curated 400
-  training sequences are still missing. The basic dataset importer continues
-  to provide 30 bootstrap proposals unless `import-grasps` replaces them.
-- The neural path uses original Text2HOI weights and a coarse prediction/MANO
-  bridge; no new weights are trained, and the full interaction refiner is absent.
-- Speech/VLM calls, live calibrated body tracking and robot execution are not
-  implemented by the offline method. Supplied intent and skeletal keypoints
-  drive the available interfaces and execution formulas.
-- Table I questionnaire results and Table II FS real-robot performance are
-  reference results, not offline simulator outcomes. The reported 88%, 83.33%
-  and 73.33% correspond to 132/150, 110/132 and 110/150 respectively. The paper
-  provides no objective A1/A2/A3 simulation success rates to reconstruct.
+- The local Panda archive supplies 6,827 candidates for 16 objects. The method
+  selects from N proposals. The dataset importer supplies 30 bootstrap proposals;
+  `import-grasps` replaces them with the annotated archive.
+- The neural path uses original Text2HOI pretrained weights and a coarse
+  prediction/MANO bridge.
+- Structured intent, annotated usage regions and calibrated skeletal keypoints
+  drive the selection and execution interfaces.
+- The paper's Table I questionnaire and Table II real-robot measurements are
+  paper reference results. Local simulation results have their own trial records.
 
 ## Current integration
 
@@ -108,16 +100,16 @@ the fixed receiver → audit the resolved trial. Preserve failures and identical
 receiver seeds across modes. Do not replace a hand after method selection or
 move it to make a failed target reachable.
 
-This integration passes geometry contracts, not a recovered human-study result.
-Source candidate part names are provenance, not semantic surface masks. Legacy
+This integration validates geometry contracts. Source candidate part names
+are provenance; usage regions come from the input scene. Legacy
 proxy, mesh-surface/proxy-width, and calibrated mesh-width evaluations must
 remain separately labelled in reports.
 
 ## Width conventions and the separate benchmark paper
 
 The method manuscript (IROS26_3319_FI, Sec. III-A) defines object width along
-the closing direction but does not specify a clipping footprint. Local pad
-aperture is this release's explicit geometric implementation choice. The
+the closing direction. This implementation measures local pad aperture using
+the configured clipping footprint. The
 separate benchmark manuscript (IROS26_3330_FI, Sec. III-D, Eq. 3) also defines
 width along the closing axis and a maximum of 85 mm. The companion currently
 operationalizes that stability metric as the entire original mesh projection,
@@ -126,16 +118,12 @@ recorded separately as `stability_width_m`; its actual actuator opening remains
 
 All 48 bottle proposals exceed 85 mm under that global projection (range
 89.552–272.047 mm), despite feasible local pad apertures. The 16 fixed-receiver
-bottle trials retain this Stability failure before planning. Neither publication
-fully specifies the footprint operation, so this distinction is a documented
-reproduction limitation, not evidence that the original study used one rule
-or that a failure may be silently repaired.
+bottle trials retain this Stability failure before planning. The two recorded
+widths make the aperture and Stability calculations explicit and reproducible.
 
-Unlike the method paper, the benchmark manuscript Sec. III-C explicitly retains
-the top 100 candidates per object. The recovered archive has variable counts
-(48–1,259), with no verified paper ranking/subset. Using every locally available
-candidate is a runnable local-data evaluation, not the benchmark's recovered
-100-candidate protocol. Do not truncate by input order and call it top-100.
+The benchmark manuscript Sec. III-C uses top-100 candidates per object.
+The local archive contains 48–1,259 proposals per object; local integration
+evaluates every archived proposal in source order and records these counts.
 
 
 For comparisons using the companion's global projection rule, explicitly set

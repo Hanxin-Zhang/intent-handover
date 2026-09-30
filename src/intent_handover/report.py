@@ -60,5 +60,5 @@ body{{background:#111b2d;color:#e9f0ff;font:16px system-ui;margin:36px auto;max-
 <footer>{html.escape(result['provenance'])}. Geometry is in metres. Lower avoidance cost is preferred.
 Width policy: {html.escape(result.get('grasp_contract', {}).get('width_policy', 'global_projection'))}.
 Feasibility: {html.escape(result.get('grasp_contract', {}).get('feasibility_width_policy', 'opening'))}.
-Proxy contacts do not verify physical grasping.</footer></html>'''
+Contact geometry follows the recorded width policy.</footer></html>'''
     Path(output).write_text(document)

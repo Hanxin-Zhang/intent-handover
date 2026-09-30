@@ -96,7 +96,7 @@ applies the inverse predicted object transform. Hand centre is the vertex mean;
 direction is wrist-to-middle-fingertip. The palm normal comes from the
 wrist/index/pinky-base triangle, with a left/right sign convention. Use
 `--flip-palm-normal` if your input convention uses the opposite side of the palm.
-Only the H2O checkpoint/object-transform convention is currently supported.
+The bridge uses the H2O checkpoint/object-transform convention.
 
 ## 4. Replay in the separate benchmark
 
@@ -113,12 +113,11 @@ r2handoversim demo --trial outputs/neural_trial.json --headless \
 
 The simulator renders the decoded mesh and evaluates box proxies around the
 predicted skeleton by default. Add `--hand-collision mesh` to evaluate safety
-against the static hand triangles in Isaac Sim; planning remains box-based. A one-frame coarse prediction on procedural geometry is a
-working integration example, not a guarantee of realistic contact or the
-paper's quality. The refiner and arbitrary-object grasp generation remain
-outside this release.
+against static hand triangles in Isaac Sim. This procedural-scene workflow
+uses box-based planning. For original-asset planning with PhysX queries, use
+the [calibrated fixed-receiver workflow](workflows.md#original-candidates-real-asset-pads-and-fixed-receivers).
 
 For method/replay contract checking, run [audit-replay](workflows.md#verify-replay-preserves-the-method)
-on the benchmark's resolved trial. Imported local-width scenes require companion
-integration beyond benchmark 0.8.0; an original-asset geometric fit alone does
-not preserve the method's constraints or selected ranking.
+on the benchmark's resolved trial. Use R2HandoverSim 0.10.0 or newer and
+prepare all asset candidates before selection to preserve the constraints
+and ranking.

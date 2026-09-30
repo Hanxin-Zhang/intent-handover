@@ -1,7 +1,7 @@
 {
   "schema_version": "handover.scene.v1",
   "units": "m",
-  "provenance": "Procedural release demo; not a paper trial or Text2HOI prediction",
+  "provenance": "Procedural release demo with fixed receiving-hand geometry",
   "utterance": "I need to hammer a nail.",
   "intent": {
     "object_id": "hammer",
