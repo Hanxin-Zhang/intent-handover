@@ -2,7 +2,7 @@
 
 ## 0.7.0 integration validation
 
-- 54 CPU tests cover annotation frame conversion, numerical rotation repair,
+- 55 CPU tests cover annotation frame conversion, numerical rotation repair,
   triangle ray intersections and clipped pad sections, independent asset contact
   validation, fixed receiver replay audits and earlier workflows. Python 3.11 /
   NumPy 1.26 and Python 3.10 / NumPy 2.2 runs are recorded locally.
@@ -18,11 +18,20 @@
   companion and reran all four modes before conversion. All 16 inputs preserve
   selected pose/aperture, the original object mesh, full hand mesh/boxes and
   fixed receiver/object world poses in the method audit. FS/A1 now select
-  candidate 4; A2/A3 select candidate 1. All 16 resolved Isaac trials also pass the same geometry audit. They
+  candidate 4; A2/A3 select candidate 1. All 16 resolved Isaac trials also pass
+  the same geometry audit. They
   fail the companion Stability stage: whole-mesh projected width exceeds
   85 mm, so planning is not attempted. Local contact aperture is not this
   whole-object metric; zero successes here must not be reported as successful
   planning or paper-result reproduction.
+- Prepared 224 original can candidates against the USD pads (220 fits, four
+  retained failures). Four fixed receivers with `object_projection` feasibility
+  select candidate 21 for FS, 66 for A1, and 12 for A2/A3. Their whole-object
+  widths are 78.859, 82.240 and 74.917 mm, while actual apertures are 67.763,
+  73.482 and 70.409 mm. Isaac PhysX S0 replay completes all 16 trials:
+  FS succeeds in 3/4, A1 in 1/4, A2/A3 in 4/4 each; the four other trials fail
+  Plan. This small local integration batch is not a paper ablation estimate.
+  Earlier local-aperture can runs retain all 16 Stability failures separately.
 - Original candidates and mesh files, licensed MANO assets and derived replay
   records remain in ignored local outputs. The paper's 400 training trajectories,
   semantic surface masks and original experiment subset are not recovered;

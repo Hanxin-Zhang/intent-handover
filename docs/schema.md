@@ -148,3 +148,19 @@ transformed into object coordinates before method selection. Replay auditing
 checks this world target, receiver identity/pose, complete supplied hand
 geometry, object mesh, selected grasp and aperture. Physics/planning are
 separate benchmark validations.
+
+## Width feasibility and actual aperture
+
+`gripper.feasibility_width_policy` defaults to `opening` for compatibility:
+`width_policy` determines both aperture and width feasibility. Set it explicitly
+to `object_projection` when comparing with the companion's whole-object
+Stability implementation. All four modes then also reject a full object span
+over the aperture limit, using original mesh vertices when available and box
+corners otherwise. The entire candidate set is filtered before ranking.
+
+`selected.width_m` remains the actual pad aperture for control;
+`selected.feasibility_width_m` records the separate width constraint. The
+selection contract stores `feasibility_width_policy`. The audit compares a
+resolved `stability_width_m` with the independently recomputed feasibility width
+when object projection is requested. This preserves both physical contacts and
+the shared evaluation rule without changing candidates in the simulator.

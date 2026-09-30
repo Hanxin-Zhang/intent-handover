@@ -9,6 +9,9 @@
   evidence and robot/frame bindings before FS/A1/A2/A3 selection.
 - Preserve and audit explicit aperture, original object mesh, complete receiving
   geometry and fixed world receiver/object targets across the companion boundary.
+- Separate actual pad aperture from optional whole-object width feasibility;
+  `ablate --feasibility-width-policy object_projection` aligns all modes with
+  the companion Stability width rule before ranking.
 - Correct the reproduction scope: the method paper specifies N candidates, not
   top-100; locally recovered proposals do not establish the original trial subset.
 

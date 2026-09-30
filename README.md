@@ -84,6 +84,9 @@ estimates. Original local Panda proposals and OBJ surfaces can now be imported w
 `import-grasps`. Actual USD pad fitting happens before four-mode selection;
 `asset_mesh_pad` independently rechecks the final mesh geometry. See
 [geometry audit and integration requirements](docs/geometry_audit.md).
+For the companion's whole-object Stability rule, run paired selection with
+`ablate --feasibility-width-policy object_projection`; actual pad aperture is
+kept separate from this feasibility measurement.
 
 Use `intent-handover audit-replay` to compare a benchmark's resolved trial with
 the method selection. It returns a nonzero exit status for changed or unsupported

@@ -45,7 +45,9 @@ def write_report(scene, result, output):
         boxes += [moved(b, selected["T_object_gripper"]) for b in gripper_boxes(selected["width_m"])]
         colors += ["#84a9ff"] * 3
     rows = ''.join('<tr>' + ''.join(f'<td>{html.escape(str(v))}</td>' for v in
-                   [r["id"], f'{r["width_m"]*1000:.1f}' if r["width_m"] is not None else 'n/a', f'{r["avoidance_cost"]:.4f}',
+                   [r["id"], f'{r["width_m"]*1000:.1f}' if r["width_m"] is not None else 'n/a',
+                    f'{r.get("feasibility_width_m", r["width_m"])*1000:.1f}' if r.get("feasibility_width_m", r["width_m"]) is not None else 'n/a',
+                    f'{r["avoidance_cost"]:.4f}',
                     ', '.join(r["rejection_reasons"]) or 'valid']) + '</tr>' for r in result["candidates"])
     title = f'Intent-Handover / {scene["object"]["id"]} / {result["mode"]}'
     document = f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
@@ -54,8 +56,9 @@ body{{background:#111b2d;color:#e9f0ff;font:16px system-ui;margin:36px auto;max-
 </style><h1>{html.escape(title)}</h1><p>{html.escape(scene['utterance'])}</p>
 <p>Human region: <code>{html.escape(scene['intent']['human_region'])}</code> · Selected: <code>{html.escape(result['selected']['id'] if result['selected'] else 'none')}</code></p>
 {svg_scene(boxes, colors, cloud)}<p>Green: {'source point cloud' if cloud is not None else 'object proxy'} · Orange: receiving hand proxy · Blue: selected gripper proxy</p>
-<table><tr><th>Candidate</th><th>Width (mm)</th><th>Avoidance cost ↓</th><th>Constraint result</th></tr>{rows}</table>
+<table><tr><th>Candidate</th><th>Aperture (mm)</th><th>Feasibility width (mm)</th><th>Avoidance cost ↓</th><th>Constraint result</th></tr>{rows}</table>
 <footer>{html.escape(result['provenance'])}. Geometry is in metres. Lower avoidance cost is preferred.
 Width policy: {html.escape(result.get('grasp_contract', {}).get('width_policy', 'global_projection'))}.
+Feasibility: {html.escape(result.get('grasp_contract', {}).get('feasibility_width_policy', 'opening'))}.
 Proxy contacts do not verify physical grasping.</footer></html>'''
     Path(output).write_text(document)

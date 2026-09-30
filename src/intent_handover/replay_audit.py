@@ -57,9 +57,15 @@ def audit_replay(scene, selection, trial, delivery=None):
         check(method.get("width_source") == expected["width_source"], "method_width_source_changed")
         check(all(close(method.get(k), expected[k]) for k in ("cosine", "distance_m", "avoidance_cost")),
               "method_score_evidence_changed")
-        defaults = {"score_reference_point_gripper": [0, 0, 0], "approach_surface": "box_union", "geometry_contract": None}
+        defaults = {"score_reference_point_gripper": [0, 0, 0], "approach_surface": "box_union", "geometry_contract": None,
+                    "feasibility_width_policy": "opening"}
         supplied = trial.get("grasp_contract", {})
         check(all(supplied.get(k, defaults.get(k)) == v for k, v in current["grasp_contract"].items()), "grasp_contract_changed")
+    if current["grasp_contract"]["feasibility_width_policy"] == "object_projection" and "stability_width_m" in trial:
+        check(close(trial["stability_width_m"], expected["feasibility_width_m"]), "stability_width_changed")
+    if current["grasp_contract"]["feasibility_width_policy"] == "object_projection":
+        check(close(saved.get("feasibility_width_m"), expected["feasibility_width_m"]) and method is not None
+              and close(method.get("feasibility_width_m"), expected["feasibility_width_m"]), "feasibility_width_evidence_changed")
     if "asset_robot" in trial or "T_tcp_asset_tool" in trial:
         geometry = current["grasp_contract"].get("geometry_contract")
         calibrated = (method is not None and expected["width_source"] == "asset_mesh_pad" and geometry
@@ -97,7 +103,7 @@ def audit_replay(scene, selection, trial, delivery=None):
         check(trial.get("receiver_protocol", {}).get("policy") == "fixed_world", "fixed_receiver_protocol_changed")
         receiver = scene.get("receiver", {})
         actual_receiver = trial.get("receiver", {})
-        check(all(actual_receiver.get(k) == receiver[k] for k in ("id", "side", "seed", "static_world") if k in receiver),
+        check(all(actual_receiver.get(k) == value for k, value in receiver.items() if k != "T_world_hand"),
               "fixed_receiver_identity_changed")
         if "T_world_hand" in receiver:
             check(close(actual_receiver.get("T_world_hand"), receiver["T_world_hand"]), "fixed_receiver_pose_changed")

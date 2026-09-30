@@ -7,7 +7,7 @@ experiment code or a reproduction of the reported user-study measurements.
 
 | Paper detail | Code | Remaining difference |
 |---|---|---|
-| Width and human-usage constraints, Sec. III-A.3 | `core.select_grasp` | Original triangle meshes are supported; human-usage regions still require supplied geometric labels |
+| Width and human-usage constraints, Sec. III-A.3 | `core.select_grasp` | Original triangle meshes and explicit width conventions are supported; human-usage regions still require supplied labels |
 | Approach-axis intersection `x_int` | `geometry.approach_intersection`, `mesh_geometry.mesh_approach_intersection` | Exact ray/triangle or ray/OBB intersection; legacy supplied points still accepted |
 | Minimize cosine minus hand/gripper distance | `core.select_grasp` | Metres, equal coefficients as written in the paper; no additional learned ranking |
 | FS/A1/A2/A3 | `core.MODES` | First feasible input candidate is the explicit A2/A3 tie policy |

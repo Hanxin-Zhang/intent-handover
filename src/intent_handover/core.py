@@ -35,6 +35,9 @@ def select_grasp(scene, mode="FS"):
         raise ValueError("Expected parallel_jaw_tip grasp frame; adapt other TCPs explicitly")
     score_reference = vector(scene["gripper"].get("score_reference_point_gripper", [0, 0, 0]))
     mesh = scene["object"].get("mesh")
+    feasibility_policy = scene["gripper"].get("feasibility_width_policy", "opening")
+    if feasibility_policy not in ("opening", "object_projection"):
+        raise ValueError("Unknown feasibility_width_policy")
     if width_policy == "asset_mesh_pad" and (mesh is None or not scene["gripper"].get("geometry_contract")):
         raise ValueError("Asset mesh pad policy requires object.mesh and gripper.geometry_contract")
     digest = mesh_digest(mesh) if width_policy == "asset_mesh_pad" else None
@@ -76,6 +79,10 @@ def select_grasp(scene, mode="FS"):
             width = mesh_section["width_m"] if mesh_section else None
         else:
             width = projected_width(scene["object"]["boxes"], t[:3, 1])
+        feasibility_width = width
+        if feasibility_policy == "object_projection":
+            feasibility_width = (float(np.ptp(np.asarray(mesh["vertices"]) @ t[:3, 1])) if mesh is not None else
+                                 projected_width(scene["object"]["boxes"], t[:3, 1]))
         in_usage = hit is not None and any(contains(b, hit) for b in regions[intended])
         on_object = hit is not None and (mesh is not None or any(contains(b, hit) for b in scene["object"]["boxes"]))
         score_point = points(t, score_reference)
@@ -94,10 +101,13 @@ def select_grasp(scene, mode="FS"):
             rejected.append("off_center_mesh_pad_section")
         if width is not None and width > max_width + 1e-9:
             rejected.append("width_exceeds_aperture")
+        if feasibility_policy == "object_projection" and feasibility_width > max_width + 1e-9:
+            rejected.append("object_projection_exceeds_aperture")
         if use_region and in_usage:
             rejected.append("human_usage_region")
         rows.append({"id": cid, "T_object_gripper": t.tolist(),
                      "approach_point_object": hit.tolist() if hit is not None else None, "width_m": width,
+                     "feasibility_width_m": feasibility_width,
                      "width_source": width_policy, "proxy_contact": section, "mesh_contact": mesh_section,
                      "geometry_preparation": deepcopy(candidate.get("geometry_preparation")),
                      "approach_source": approach_source, "score_point_object": score_point.tolist(),
@@ -113,5 +123,6 @@ def select_grasp(scene, mode="FS"):
                                "score_reference_point_gripper": score_reference.tolist(),
                                "approach_surface": "triangle_mesh" if mesh is not None else "box_union",
                                "geometry_contract": deepcopy(scene["gripper"].get("geometry_contract")),
+                               "feasibility_width_policy": feasibility_policy,
                                "width_policy": width_policy, "max_opening_m": max_width},
             "candidates": rows, "provenance": scene.get("provenance", "user input")}

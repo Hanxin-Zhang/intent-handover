@@ -31,6 +31,8 @@ def main(argv=None):
     sources.add_argument("--manifest", type=Path)
     sources.add_argument("--object", choices=[*NAMES, "all"], default="all")
     ablation.add_argument("--output", type=Path, default=Path("outputs/ablation"))
+    ablation.add_argument("--feasibility-width-policy", choices=("opening", "object_projection"),
+                          help="Override the shared width constraint; object_projection matches the companion's global stability metric")
     pipeline = sub.add_parser("pipeline", help="Run scene -> Text2HOI -> MANO -> grasp selection")
     source = pipeline.add_mutually_exclusive_group(required=True)
     source.add_argument("--scene", type=Path)
@@ -126,6 +128,9 @@ def main(argv=None):
             from .workflows import ablate, manifest_scenes
             scenes = (manifest_scenes(args.manifest) if args.manifest else [json.loads(args.scene.read_text())]
                       if args.scene else [load_scene(n) for n in (NAMES if args.object == "all" else [args.object])])
+            if args.feasibility_width_policy:
+                for scene in scenes:
+                    scene["gripper"]["feasibility_width_policy"] = args.feasibility_width_policy
             result = ablate(scenes, args.output)
             print(f"{len(result['objects'])} objects × 4 modes: {(args.output/'experiment.json').resolve()}")
             return

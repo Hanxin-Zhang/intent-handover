@@ -136,3 +136,11 @@ the top 100 candidates per object. The recovered archive has variable counts
 (48–1,259), with no verified paper ranking/subset. Using every locally available
 candidate is a runnable local-data evaluation, not the benchmark's recovered
 100-candidate protocol. Do not truncate by input order and call it top-100.
+
+
+For comparisons using the companion's global projection rule, explicitly set
+`gripper.feasibility_width_policy=object_projection` (or the equivalent `ablate`
+CLI option). The method then enforces this width for every mode before ranking,
+while retaining the actual local pad aperture for actuation. This makes method
+feasibility and benchmark Stability consistent. Original local-aperture runs
+remain separate records; their failed trials are not replaced in place.

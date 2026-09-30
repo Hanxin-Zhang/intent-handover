@@ -119,11 +119,17 @@ entries: do not pass this manifest to `ablate --manifest`.
 
 ```bash
 intent-handover ablate --scene /path/to/one_receiver_scene.json \
+  --feasibility-width-policy object_projection \
   --output outputs/one_receiver_methods
 r2handoversim from-experiment \
   --manifest outputs/one_receiver_methods/experiment.json \
   --output outputs/one_receiver_trials
 ```
+
+The explicit feasibility option filters by the same whole-object width used
+by the companion Stability metric while preserving actual pad aperture for
+control. A scene can therefore have no feasible grasp; retain this outcome.
+Omitting the option preserves the scene's existing policy (default `opening`).
 
 Use a companion version that preserves `fixed_world` in `from-experiment`;
 legacy versions overwrite the target. All four modes must see the same prepared

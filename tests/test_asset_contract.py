@@ -63,6 +63,24 @@ class AssetContractTests(unittest.TestCase):
         result=select_grasp(scene)
         self.assertIn('asset_contacts_off_object_surface',result['candidates'][0]['rejection_reasons'])
 
+    def test_projection_feasibility_is_separate_from_local_actuator_aperture(self):
+        scene=self.scene();mesh=scene['object']['mesh']
+        remote=np.asarray(mesh['vertices'])*[1,10,1]+[1,0,1]
+        mesh['vertices']+=remote.tolist()
+        mesh['faces']+=(np.asarray(mesh['faces'])+8).tolist()
+        digest=mesh_digest(mesh)
+        scene['gripper']['geometry_contract']['mesh_sha256']=digest
+        scene['candidates'][0]['geometry_preparation']['mesh_sha256']=digest
+        self.assertAlmostEqual(select_grasp(scene)['selected']['width_m'],.04)
+        scene['gripper']['feasibility_width_policy']='object_projection'
+        for mode in MODES:
+            result=select_grasp(scene,mode)
+            self.assertIsNone(result['selected'])
+            row=result['candidates'][0]
+            self.assertAlmostEqual(row['width_m'],.04)
+            self.assertAlmostEqual(row['feasibility_width_m'],.4)
+            self.assertIn('object_projection_exceeds_aperture',row['rejection_reasons'])
+
     def test_large_triangle_corners_inside_pad_are_not_lost(self):
         mesh={'vertices':[[-1,-.02,-1],[1,-.02,-1],[0,-.02,1],[-1,.02,-1],[1,.02,-1],[0,.02,1]],
               'faces':[[0,1,2],[3,4,5]]}
@@ -82,6 +100,15 @@ class AssetContractTests(unittest.TestCase):
                'object_mesh_object':scene['object']['mesh'],
                'method_selection':{**selection['selected'],'mode':'FS'},'asset_robot':{'usd':'test.usd'}}
         self.assertEqual(audit_replay(scene,selection,trial)['status'],'equivalent')
+        scene['gripper']['feasibility_width_policy']='object_projection'
+        selection=select_grasp(scene)
+        trial['grasp_contract']=selection['grasp_contract']
+        trial['method_selection']={**selection['selected'],'mode':'FS'}
+        trial['stability_width_m']=.04
+        self.assertEqual(audit_replay(scene,selection,trial)['status'],'equivalent')
+        trial['stability_width_m']=.05
+        self.assertIn('stability_width_changed',audit_replay(scene,selection,trial)['issues'])
+        trial['stability_width_m']=.04
         trial['T_tcp_asset_tool']=pose([0,0,.1]).tolist()
         trial['T_asset_tool_grasp_frame']=copy.deepcopy(scene['gripper']['geometry_contract']['T_asset_tool_grasp_frame'])
         trial['asset_contact_fit']=copy.deepcopy(selection['selected']['geometry_preparation'])
