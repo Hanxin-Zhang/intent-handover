@@ -1,17 +1,42 @@
 {
   "hero": {
     "kind": "evaluated_isaacsim_replay",
-    "trial_id": "screwdriver_FS_screwdriver_receiver_27_0000_left",
+    "trial_id": "screwdriver_FS_screwdriver_receiver_41_0005_right",
     "strategy": "FS",
     "views": [
       "overview",
-      "left"
+      "right"
     ],
     "presentation": "Synchronized views of one saved trajectory",
     "source_sha256": {
-      "overview": "92efab999768ae0d005a60083ea232a9e9cffa25bda331a643d5ed92aca2b1b8",
-      "left": "fc14684f6b7e5420b15efc49088c03ed26cae5c5f640fa4d958cf0c854290326"
-    }
+      "overview": "2bf2790d9d241cd084742baa1e1e913c9497f55c75af6b2cc7bc6cfc8e7ebf35",
+      "right": "2977bbf744c9f61cb4f441343dee62e5f0dd8948b0f65e4c1cc01be52f3e399b"
+    },
+    "receiver_side": "right",
+    "receiver_seed": 41,
+    "playback_speed": 0.5,
+    "validation": {
+      "success": true,
+      "metrics": {
+        "stability": true,
+        "plan": true,
+        "reach": true,
+        "affordance": true,
+        "safe": true
+      },
+      "validated_frames": 91,
+      "path_collision_free": true,
+      "method_replay_equivalent": true,
+      "camera_trajectories_identical": true
+    },
+    "terminal_joint_degrees": [
+      18.048,
+      -51.892,
+      55.697,
+      -84.287,
+      -140.867,
+      6.313
+    ]
   },
   "gallery": {
     "kind": "evaluated_isaacsim_replay",
@@ -95,8 +120,8 @@
   },
   "files": {
     "intent-handover.gif": {
-      "bytes": 3149863,
-      "sha256": "649139df3ee3b2f1fab63269780b4cc35bb9dbf16f9ca1389765ca841074bbf9"
+      "bytes": 1855435,
+      "sha256": "4f52d0f97f132c79806f4aa25a27d262a3546498aa6b4d2972ab4aa9ffacba27"
     },
     "receiver-gallery.mp4": {
       "bytes": 1090101,
@@ -115,8 +140,8 @@
       "sha256": "0a8a9c1737072772a3d7fd8a13bd930150b7215d30600853e465462948ed9254"
     },
     "intent-handover.mp4": {
-      "bytes": 200397,
-      "sha256": "41b1064c2913a19a165d9e5b7533c775698aa8b3227224ee92607257fc6237b4"
+      "bytes": 134979,
+      "sha256": "eb923077fd2bb9770182c1f4b89ed932de9a0f2cdb2e3d6848e63dec622ac35a"
     }
   }
 }
