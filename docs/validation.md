@@ -2,8 +2,10 @@
 
 ## 0.7.0 integration validation
 
-Post-release checks with the companion's 0.10.0 release candidate also cover
-the benchmark reachable-set condition and a simulator lifecycle correction:
+Post-release checks with the companion's
+[published 0.10.0](https://github.com/Hanxin-Zhang/r2handoversim/releases/tag/v0.10.0)
+(commit `3eb1c9e007df1d9782c91580672c48f62220034e`) also cover the benchmark
+reachable-set condition and a simulator lifecycle correction:
 
 - A multi-object recording run exposed stale PhysX hand-collider state between
   trials. The companion now creates a fresh USD/PhysX scene per trial and checks
@@ -14,6 +16,12 @@ the benchmark reachable-set condition and a simulator lifecycle correction:
   field and validate all 264 surface probes. Export verification passes for
   33 trials and 4,101 frames. The interrupted recording batch remains failed;
   it is not used as successful validation evidence.
+- The replacement 33-trial recording batch also completes and passes export
+  verification. Every exported trajectory array equals the fresh-evaluation
+  array exactly across all 4,101 frames; method geometry and numeric results
+  are unchanged. Outcomes remain 24 successes, seven Plan first failures and
+  two Affordance first failures. The local captioned review lasts 169.011 s.
+  This is a presentation of the same trials, not 33 additional experiments.
 - Two additional can receivers use `sampling.require_reference_ik: true`,
   defining a shared reference-grasp reachable set before four-mode selection.
   Both initial proposals pass, with no rejected proposals in this small sample.
