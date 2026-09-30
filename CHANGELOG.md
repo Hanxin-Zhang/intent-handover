@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1
+
+- Export a paired method replay index with explicit FS/A1/A2/A3 settings and links to selections, and document original USD/OBJ replay in the companion benchmark.
+
 ## 0.5.0
 
 - Add a one-command original-weight Text2HOI/MANO/selection pipeline with stage

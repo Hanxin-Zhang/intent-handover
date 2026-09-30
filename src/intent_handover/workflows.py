@@ -80,6 +80,15 @@ def ablate(scenes, output):
     manifest = {"schema_version": "handover.experiment.v1", "objects": records, "modes": list(MODES),
                 "scope": "Paired method ablations; all modes use the same object/hand inputs"}
     (output/"experiment.json").write_text(json.dumps(manifest, indent=2))
+    replay = {"schema_version": "handover.method_replay.v1", "record_kind": "settings_replay",
+              "source": "Intent-Handover, method and FS/A1/A2/A3 ablation definitions",
+              "experiment": "experiment.json", "paper_simulation_success_rate": None,
+              "excluded": ["real-robot trial statistics", "participant questionnaires"],
+              "settings": {mode: {"usage_constraint": flags[0], "avoidance_ranking": flags[1]}
+                           for mode, flags in MODES.items()},
+              "records": [{**row, "scene": f"{row['object_id']}_scene.json",
+                           "selection": f"{row['object_id']}_{row['mode']}.json"} for row in rows]}
+    (output/"replay.json").write_text(json.dumps(replay, indent=2))
     with (output/"ablation.csv").open("w", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
     return manifest

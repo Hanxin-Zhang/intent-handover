@@ -130,3 +130,16 @@ models, third-party dataset meshes, checkpoints or participant recordings are
 bundled. See [THIRD_PARTY.md](THIRD_PARTY.md).
 
 Paper/project: [Intent-Handover](https://robot-future.github.io/intent-handover/).
+
+## Replay with original Isaac Sim assets
+
+`ablate` also exports `replay.json`: paired FS/A1/A2/A3 settings, selected grasps,
+and links to each scene and selection. It excludes real-robot statistics and
+participant questionnaires; the paper does not report an objective simulation
+success rate for these four method settings.
+
+Convert the exported experiment with the companion benchmark's `from-experiment`
+command, then pass its `trials.json` to `demo --trials`. Add
+`--asset-config /path/to/local_assets.json --video --animation` to replay the
+original UR5e + Robotiq 2F-85 USD and the configured object OBJ meshes.
+See the benchmark's [local asset setup](https://github.com/Hanxin-Zhang/r2handoversim#local-ur5e--robotiq-and-object-meshes).

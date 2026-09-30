@@ -34,6 +34,10 @@ class WorkflowTests(unittest.TestCase):
             a1=json.loads((root/'hammer_A1.json').read_text())
             self.assertNotEqual(fs['selected']['id'],a1['selected']['id'])
             self.assertEqual(len((root/'ablation.csv').read_text().splitlines()),5)
+            replay=json.loads((root/'replay.json').read_text())
+            self.assertEqual(len(replay['records']),4)
+            self.assertIsNone(replay['paper_simulation_success_rate'])
+            self.assertEqual(replay['settings']['A1'],{'usage_constraint':False,'avoidance_ranking':True})
 
     def test_failed_pipeline_replaces_old_success_manifest(self):
         with tempfile.TemporaryDirectory() as tmp:
