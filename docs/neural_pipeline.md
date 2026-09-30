@@ -1,8 +1,7 @@
 # Text2HOI → MANO → grasp selection → Isaac Sim
 
 The neural path is now connected to grasp selection. Use the same object cloud
-and scene at every step. The first release's procedural demos remain available
-without any neural dependencies.
+and scene at every step. The bundled CPU demos provide a quick starting point.
 
 ## 1. Install optional decoding dependencies
 
@@ -118,6 +117,6 @@ uses box-based planning. For original-asset planning with PhysX queries, use
 the [calibrated fixed-receiver workflow](workflows.md#original-candidates-real-asset-pads-and-fixed-receivers).
 
 For method/replay contract checking, run [audit-replay](workflows.md#verify-replay-preserves-the-method)
-on the benchmark's resolved trial. Use R2HandoverSim 0.10.0 or newer and
+on the benchmark's resolved trial. Use the current R2HandoverSim workflow and
 prepare all asset candidates before selection to preserve the constraints
 and ranking.

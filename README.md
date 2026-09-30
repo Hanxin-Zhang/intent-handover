@@ -1,162 +1,103 @@
+<div align="center">
+
 # Intent-Handover
 
-Runnable core code for **Intent-Handover: Grounding Language in Human-Usage
-Regions for Trustworthy Robot-to-Human Handovers**.
+**Hand over objects ready for human use.**
 
-Version 0.7.0 provides an offline method implementation with optional original-weight
-neural inference. Run three CPU demos with no
-GPU, model download, MANO, ROS, or simulator. Each demo filters robot grasps by
-gripper aperture and the intended human usage region, then ranks valid grasps
-using `cos(robot_approach, hand_direction) - distance_m`.
+Intent-aware grasp selection · Receiving-hand prediction · Ergonomic delivery
 
-Companion benchmark: [R2HandoverSim](https://github.com/Hanxin-Zhang/r2handoversim).
+[**Paper**](https://robot-future.github.io/intent-handover/IntentHandover_arxiv.pdf) · [**Project**](https://robot-future.github.io/intent-handover/) · [**Quick start**](#quick-start) · [**Demos**](#demo-gallery) · [**R2HandoverSim**](https://github.com/Hanxin-Zhang/r2handoversim)
+
+[![Intent-Handover: a synchronized workspace and grasp-detail replay](docs/media/intent-handover.gif)](docs/media/intent-handover.mp4)
+
+**One handover. Two perspectives.** Full Strategy with the original UR5e + Robotiq geometry in Isaac Sim.
+
+[▶ Watch the MP4](docs/media/intent-handover.mp4) · [Run the asset workflow →](docs/workflows.md#original-candidates-real-asset-pads-and-fixed-receivers)
+
+</div>
+
+## Demo gallery
+
+### Objects, hands and viewpoints
+
+[![Can and screwdriver replay with left and right receiving hands](docs/media/receiver-gallery.gif)](docs/media/receiver-gallery.mp4)
+
+Can and screwdriver · Left and right receivers · Fixed targets · A2 replay
+
+[▶ Watch the four-scene reel](docs/media/receiver-gallery.mp4) · [Set up receiving hands](https://github.com/Hanxin-Zhang/r2handoversim/blob/main/docs/fixed_receivers.md)
+
+### Try grasp selection on your CPU
+
+[![Bundled hammer, screwdriver and bottle grasp-selection demos](docs/media/cpu-selection.svg)](docs/quickstart.md)
+
+Three visual HTML reports, generated locally with one command. Inspect the selected grasp, aperture and candidate scores.
+
+```bash
+intent-handover demo
+```
+
+[Hammer](docs/quickstart.md#2-open-the-demos) · [Screwdriver](docs/quickstart.md#2-open-the-demos) · [Bottle](docs/quickstart.md#2-open-the-demos) · [Compare all four strategies](docs/quickstart.md#3-compare-the-four-strategies)
+
+## From intent to handover
+
+**Keep the intended human grip available.** The paper connects intent grounding, receiving-hand prediction and robot grasp optimization, followed by ergonomic delivery.
+
+[![Paper overview: intent identification, human grasp prediction and robot grasp optimization](docs/media/paper-method.png)](https://robot-future.github.io/intent-handover/IntentHandover_arxiv.pdf)
+
+*Paper overview · Fig. 2.* [Explore the method →](docs/paper_details.md)
+
+| Identify | Predict | Select | Deliver |
+| :--- | :--- | :--- | :--- |
+| Structured object and usage intent | Text2HOI → MANO hand geometry | Usage filtering + avoidance ranking | Skeletal target → simulated replay |
 
 ## Quick start
 
-Python 3.10 or newer:
+**Python 3.10+ · CPU · NumPy.** The bundled demos run locally.
 
 ```bash
 git clone https://github.com/Hanxin-Zhang/intent-handover.git
 cd intent-handover
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip setuptools wheel
 python -m pip install -e .
 intent-handover demo
 ```
 
-Open `outputs/demo/hammer_FS.html` (also screwdriver and bottle) in a browser.
-Each example writes a scene JSON, ranked results JSON, object point cloud `.npy`, and a standalone HTML
-visualization. No web server or CDN is needed. On Windows, activate with
-`.venv\Scripts\activate`.
+Open **`outputs/demo/hammer_FS.html`** in your browser. Screwdriver and bottle reports are generated alongside it.
 
-```bash
-intent-handover demo --object hammer --mode A1 --output outputs/ablation
-intent-handover select outputs/demo/hammer_scene.json --output outputs/custom
-intent-handover prompt --instruction "I need to tighten a screw."
-python -m pip install -e '.[dataset]'
-python -m unittest discover -s tests -v
+On Windows, activate with `.venv\Scripts\activate`. You can also run commands as `python -m intent_handover`.
+
+[Step-by-step guide →](docs/quickstart.md)
+
+## Choose your workflow
+
+| I want to… | Start here | You get |
+| :--- | :--- | :--- |
+| **Compare FS / A1 / A2 / A3** | `intent-handover ablate` | 12 reports + paired experiment manifest |
+| **Use a language instruction** | [Structured intent](docs/workflows.md#structured-intent) | Catalog-aware prompt + validated intent JSON |
+| **Predict a receiving hand** | [Neural pipeline](docs/neural_pipeline.md) | Text2HOI prediction + decoded MANO geometry |
+| **Use my object data** | [Dataset and grasp import](docs/dataset.md) | Object scenes + annotated candidate proposals |
+| **Replay original robot assets** | [Calibrated asset workflow](docs/workflows.md#original-candidates-real-asset-pads-and-fixed-receivers) | Fixed-receiver Isaac Sim replay + audits |
+| **Build a custom scene** | [Scene contract](docs/schema.md) | Explicit geometry, regions and grasp frames |
+
+## Built to inspect and extend
+
+**55 CPU tests** · **6,827 imported grasp proposals** · **16 object inputs** · **4 paired strategies**
+
+Selections, source hashes, receiver poses and resolved replay geometry travel together through the workflow. [Validation](docs/validation.md) · [Geometry contract](docs/geometry_audit.md) · [Media sources](docs/media/README.md)
+
+<details>
+<summary><strong>Cite this work</strong></summary>
+
+```bibtex
+@inproceedings{zhang2026intenthandover,
+  title={Intent-Handover: Grounding Language in Human-Usage Regions for Trustworthy Robot-to-Human Handovers},
+  author={Zhang, Hanxin and Dhafer, Abdulqader and Dong, Hongbiao and Hao, Zhou Daniel},
+  booktitle={IEEE/RSJ International Conference on Intelligent Robots and Systems},
+  year={2026}
+}
 ```
 
-If an installed console command is unavailable, use `python -m intent_handover`
-with the same arguments.
+</details>
 
-## Complete workflows
-
-```bash
-# Run all four method ablations on the three bundled objects:
-intent-handover ablate --output outputs/ablation
-# Apply a structured intent response:
-intent-handover select outputs/demo/hammer_scene.json \
-  --intent examples/hammer_intent.json --output outputs/intent
-```
-
-The experiment manifest connects directly to the benchmark's `from-experiment`
-command for paired Isaac Sim comparisons. See [workflow commands](docs/workflows.md).
-
-With the optional neural dependencies and local MANO installed,
-`intent-handover pipeline` runs original-weight prediction, MANO decoding and
-selection in one command. It verifies checkpoint hashes and exports a manifest
-that the benchmark accepts through `from-pipeline`.
-See [installation and the complete neural recipe](docs/neural_pipeline.md).
-
-## Use the existing local dataset config
-
-The original project defaults to `dataset: han`. Its available data contains
-16 object point clouds, each with 8192 source points and 1024 cached points.
-Import directly from that config:
-
-```bash
-python -m pip install -e '.[dataset]'
-intent-handover dataset --config /path/to/Text2HOI/configs/config.yaml \
-  --output outputs/han_dataset
-```
-
-This preserves original coordinates, names and dimensions, and produces neural
-input clouds, viewable scenes, grasp-selection demos and a source manifest.
-The generated hand, candidate grasps and receiving-zone labels are explicitly
-marked as demo annotations. See [dataset setup and provenance](docs/dataset.md).
-
-New imports insert and centre candidate grasps before selection and measure
-width over the local proxy finger footprint. This fixes surface-only TCPs and
-whole-object aperture estimates in imported examples. Contacts remain box-proxy
-estimates. Original local Panda proposals and OBJ surfaces can now be imported with
-`import-grasps`. Actual USD pad fitting happens before four-mode selection;
-`asset_mesh_pad` independently rechecks the final mesh geometry. See
-[geometry audit and integration requirements](docs/geometry_audit.md).
-For the companion's whole-object Stability rule, run paired selection with
-`ablate --feasibility-width-policy object_projection`; actual pad aperture is
-kept separate from this feasibility measurement.
-
-Use `intent-handover audit-replay` to compare a benchmark's resolved trial with
-the method selection. It returns a nonzero exit status for changed or unsupported
-geometry. See [replay verification](docs/workflows.md#verify-replay-preserves-the-method).
-
-## Included functionality
-
-| Component | Release behavior |
-|---|---|
-| Grasp selection | Executable NumPy implementation of width/usage filtering and avoidance cost |
-| FS / A1 / A2 / A3 | Switch usage awareness and avoidance ranking independently; width remains enforced |
-| Prompts | Authored structured-intent system prompt and examples, available through the `prompt` command |
-| Text2HOI | Optional original-weight coarse DDPM inference; see [setup](docs/text2hoi.md) |
-| Visualization | Standalone HTML with object, receiving hand and gripper geometry |
-| Ergonomic delivery | Shoulder/elbow/wrist keypoints → comfortable radius, 15° extension and a world-frame target; see [paper details](docs/paper_details.md) |
-| Predicted hand integration | Decode Text2HOI outputs with local MANO, select a grasp, and export the mesh/proxies to R2HandoverSim |
-
-The default examples use **procedural box geometry and fixed receiving hand
-proxies**. Send the generated prompt to your chosen model and supply the
-structured response to select the annotated human-usage region. Bundled examples compute the first approach-ray intersection with the object
-boxes and filter that surface point against the intended region. Legacy inputs
-may still supply a surface annotation directly.
-
-The optional neural adapter reuses the **original Text2HOI pretrained weights**;
-it produces coarse hand/object parameters and contact probabilities. The new
-`from-prediction` command decodes those parameters with your locally licensed
-MANO models and runs grasp selection using that predicted hand. See
-[the end-to-end recipe](docs/neural_pipeline.md). Default CPU demos still use
-fixed hand proxies and do not require MANO.
-
-## Use your own example
-
-Edit a generated `*_scene.json`, or provide one matching [the data contract](docs/schema.md).
-All coordinates are in metres in the object frame. Candidate transforms map
-gripper coordinates into object coordinates. The gripper closes along local Y
-and approaches along local +Z. Unknown regions, invalid rotations, zero hand
-directions, and duplicate candidates fail with an explanatory error. If all
-candidates fail, the output is `no_feasible_grasp` with no selected pose.
-
-## Implementation
-
-This repository implements intent-aware grasp constraints, avoidance scoring
-and integration interfaces from the DUM-E/Text2HOI workflow. The default
-gripper uses box geometry with an 85 mm aperture. A2/A3 select the first
-feasible candidate in input order. The companion benchmark handles numerical
-pose IK, RRT-Connect planning and collision evaluation, including the calibrated
-original-asset workflow below.
-
-Original code is MIT; vendored Text2HOI retains its own MIT notice. No MANO
-models, third-party dataset meshes, checkpoints or participant recordings are
-bundled. See [THIRD_PARTY.md](THIRD_PARTY.md).
-
-Paper/project: [Intent-Handover](https://robot-future.github.io/intent-handover/).
-
-## Replay with original Isaac Sim assets
-
-`ablate` also exports `replay.json`: paired FS/A1/A2/A3 settings, selected grasps,
-and links to each scene and selection for paired simulation evaluation.
-
-For method-preserving replay with R2HandoverSim 0.10.0, first import the original
-proposals and OBJ, calibrate **all candidates** with `prepare-candidates`, and
-create fixed receiver scenes with `receiver-scenes`. Run the four-mode selection
-separately on each receiver scene, using `object_projection` feasibility for the
-companion's Stability rule. Convert each resulting experiment with
-`from-experiment`, then pass its `trials.json` to `demo --trials --video --animation`.
-The prepared trials already carry the original asset binding and pad aperture.
-Audit each resolved trial against its receiver-specific scene and selection.
-
-Follow the [complete calibrated workflow](docs/workflows.md#original-candidates-real-asset-pads-and-fixed-receivers)
-for commands and the reachable-set sampling condition, and the benchmark's
-[local asset setup](https://github.com/Hanxin-Zhang/r2handoversim#local-ur5e--robotiq-and-object-meshes)
-for the UR5e + Robotiq 2F-85 USD and object OBJ files. Preparing candidates
-before selection preserves the pose, aperture and ranking through replay.
+Code: [MIT](LICENSE) · Dependencies and asset setup: [Third-party notices](THIRD_PARTY.md)

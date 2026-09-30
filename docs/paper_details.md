@@ -92,12 +92,12 @@ Sec. III-A defines N grasp candidates. The local Panda annotation archive
 supplies 6,827 proposals for 16 objects. The neural route uses original
 Text2HOI pretrained weights.
 
-## Local data now connected (0.4.0)
+## Local data
 
 The original han config's 16 available object point clouds and neural input
 cache can be imported directly with their original coordinates and source hashes. See [dataset import and provenance](dataset.md).
 
-## Geometry audit (0.6.0)
+## Geometry audit
 
 New imports prepare inserted, centred candidates and measure local proxy pad
 width before applying the paper's region constraint and avoidance score. Existing

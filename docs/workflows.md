@@ -71,8 +71,7 @@ requested scene has no feasible grasp; the rejection report is still saved.
 
 ## Verify replay preserves the method
 
-Benchmark 0.8.0 saves the **resolved** `*_trial.json` after asset fitting and
-retargeting. Use that file, rather than the pre-adaptation input, to check the
+R2HandoverSim saves the **resolved** `*_trial.json` after replay. Use that file, rather than the pre-adaptation input, to check the
 actual replay configuration:
 
 ```bash
@@ -89,8 +88,7 @@ annotations and supplied receiver geometry agree. Trajectory and collision
 evaluation run in the companion benchmark. Exit code 2 records the
 differences. The audit recomputes selection to catch stale method outputs.
 
-The audit supports the legacy benchmark 0.7/0.8 width behavior and the newer
-explicit-aperture contract. Calibrated asset replay additionally requires
+The audit verifies the explicit-aperture contract. Calibrated asset replay additionally requires
 `asset_mesh_pad`, full preparation evidence and resolved frame/contact fields.
 For mesh or fixed-receiver scenes it checks the original object mesh, the full
 supplied hand geometry, receiver identity/pose and fixed object target. Saved
@@ -115,8 +113,8 @@ r2handoversim receiver-scenes --scene outputs/calibrated_bottle_scene.json \
 ```
 
 For the benchmark paper's reachable-set condition, configure the companion's
-receiver sampler with `sampling.require_reference_ik: true` (the 0.10.0 public
-configuration enables this). It checks a shared reference grasp's full-pose IK
+receiver sampler with `sampling.require_reference_ik: true` (enabled in the
+public configuration). It checks a shared reference grasp's full-pose IK
 before any method is selected and logs all sampling proposals. The chosen
 method's own Plan criterion is evaluated separately. This is an explicit
 operational definition of the reachable set, with recorded bounds and seeds. Older bounded samples remain separately labelled validation runs.
@@ -139,8 +137,7 @@ by the companion Stability metric while preserving actual pad aperture for
 control. A scene can therefore have no feasible grasp; retain this outcome.
 Omitting the option preserves the scene's existing policy (default `opening`).
 
-Use R2HandoverSim 0.10.0 for the validated integration workflow;
-legacy versions overwrite the target. All four modes must see the same prepared
+Use the current R2HandoverSim workflow. All four modes must see the same prepared
 candidates, hand and object target. Do not apply `sample-receivers` after method
 selection. Run the companion's Isaac replay and `verify-output`, then audit each
 resolved trial against its receiver-specific scene and selection. Keep selection,

@@ -1,0 +1,122 @@
+{
+  "hero": {
+    "kind": "evaluated_isaacsim_replay",
+    "trial_id": "screwdriver_FS_screwdriver_receiver_27_0000_left",
+    "strategy": "FS",
+    "views": [
+      "overview",
+      "left"
+    ],
+    "presentation": "Synchronized views of one saved trajectory",
+    "source_sha256": {
+      "overview": "92efab999768ae0d005a60083ea232a9e9cffa25bda331a643d5ed92aca2b1b8",
+      "left": "fc14684f6b7e5420b15efc49088c03ed26cae5c5f640fa4d958cf0c854290326"
+    }
+  },
+  "gallery": {
+    "kind": "evaluated_isaacsim_replay",
+    "source_sha256": "c0ede1f976af9a06d445e867178c82d2bb7b77f6337122a85a5fc49334baf7d0",
+    "playback_speed": 0.5,
+    "presentation": "Four independent trials, aligned at their first frame and held at the end",
+    "trials": [
+      {
+        "trial_id": "can_A2_can_receiver_27_0000_left",
+        "object_id": "can",
+        "variant": "A2",
+        "success": true,
+        "first_failure": null,
+        "metrics": {
+          "stability": true,
+          "plan": true,
+          "reach": true,
+          "affordance": null,
+          "safe": true
+        }
+      },
+      {
+        "trial_id": "can_A2_can_receiver_27_0001_right",
+        "object_id": "can",
+        "variant": "A2",
+        "success": true,
+        "first_failure": null,
+        "metrics": {
+          "stability": true,
+          "plan": true,
+          "reach": true,
+          "affordance": null,
+          "safe": true
+        }
+      },
+      {
+        "trial_id": "screwdriver_A2_screwdriver_receiver_27_0000_left",
+        "object_id": "screwdriver",
+        "variant": "A2",
+        "success": true,
+        "first_failure": null,
+        "metrics": {
+          "stability": true,
+          "plan": true,
+          "reach": true,
+          "affordance": true,
+          "safe": true
+        }
+      },
+      {
+        "trial_id": "screwdriver_A2_screwdriver_receiver_27_0001_right",
+        "object_id": "screwdriver",
+        "variant": "A2",
+        "success": true,
+        "first_failure": null,
+        "metrics": {
+          "stability": true,
+          "plan": true,
+          "reach": true,
+          "affordance": true,
+          "safe": true
+        }
+      }
+    ]
+  },
+  "cpu": {
+    "kind": "bundled_procedural_geometry",
+    "strategy": "FS",
+    "objects": [
+      "hammer",
+      "screwdriver",
+      "bottle"
+    ],
+    "generator": "scripts/render_selection_overview.py"
+  },
+  "paper": {
+    "figure": 2,
+    "source": "IROS26_3319_FI.pdf",
+    "source_sha256": "605509ff3a1dbb6e32b9379e8d99f1a685191bb2b7b350a08284c34e4082227e",
+    "url": "https://robot-future.github.io/intent-handover/IntentHandover_arxiv.pdf"
+  },
+  "files": {
+    "intent-handover.gif": {
+      "bytes": 3149863,
+      "sha256": "649139df3ee3b2f1fab63269780b4cc35bb9dbf16f9ca1389765ca841074bbf9"
+    },
+    "receiver-gallery.mp4": {
+      "bytes": 1090101,
+      "sha256": "c0ede1f976af9a06d445e867178c82d2bb7b77f6337122a85a5fc49334baf7d0"
+    },
+    "receiver-gallery.gif": {
+      "bytes": 6784797,
+      "sha256": "0101cbeec098eeb6cc0b6c896e05e8dcf1c4f184bad2556e188e1bf33487bbc0"
+    },
+    "paper-method.png": {
+      "bytes": 353225,
+      "sha256": "4431a940dc124d411b51498ac4ded9a49f27a8ea0440eafc6b907160be973c23"
+    },
+    "cpu-selection.svg": {
+      "bytes": 37647,
+      "sha256": "0a8a9c1737072772a3d7fd8a13bd930150b7215d30600853e465462948ed9254"
+    },
+    "intent-handover.mp4": {
+      "bytes": 200397,
+      "sha256": "41b1064c2913a19a165d9e5b7533c775698aa8b3227224ee92607257fc6237b4"
+    }
+  }
+}

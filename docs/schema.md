@@ -45,7 +45,7 @@ Conversion places the selected object/gripper relation at the demo's fixed UR5e
 goal and positions the receiving hand relative to it. Supply `--delivery` for
 a computed world-frame target.
 
-## Optional predicted-hand geometry (0.2.0)
+## Optional predicted-hand geometry
 
 `receiving_hand.palm_normal` is separate from the wrist-to-finger `direction`.
 Both are in canonical object coordinates. `receiving_hand.mesh` may contain
@@ -53,7 +53,7 @@ MANO vertices/faces for the simulator viewer. The generated `boxes` approximate
 the skeleton and remain the collision representation. The bridge also records
 prediction frame and source checkpoint hashes.
 
-## Computed approach intersections (0.3.0)
+## Computed approach intersections
 
 A candidate may provide `approach_ray_origin_object` on its approach axis,
 outside the object. The selector raycasts along gripper local +Z against the
@@ -65,7 +65,7 @@ Legacy candidates without the ray origin retain their supplied surface point.
 `handover.skeleton.v1` and `handover.delivery.v1` are described in
 [the execution recipe](paper_details.md).
 
-## Configured dataset scenes (0.4.0)
+## Configured dataset scenes
 
 Optional `object.surface_points` contains original object-frame XYZ points.
 The HTML report displays these points; selection width checks still use
@@ -74,7 +74,7 @@ The HTML report displays these points; selection width checks still use
 passed explicitly to the benchmark. Dataset import/export details and generated
 annotation conventions are documented in [dataset.md](dataset.md).
 
-## Local pad geometry (0.6.0)
+## Local pad geometry
 
 `gripper.grasp_frame` defaults to and currently only accepts
 `parallel_jaw_tip`. The origin is the midpoint between the finger tips;
@@ -108,7 +108,7 @@ trusted as precomputed acceptance flags. The selector recomputes geometry.
 Selection-level `grasp_contract` records `frame`, `closing_axis`,
 `approach_axis`, `width_policy`, and `max_opening_m`. Consumers must preserve
 the selected pose, aperture and contract or explicitly adapt and revalidate
-them. Use R2HandoverSim 0.10.0 or newer for the integrated asset contract.
+them. Use the current R2HandoverSim integrated asset contract.
 The integrated consumer carries explicit aperture and method evidence; use
 `audit-replay` to verify the actual trial rather than inferring compatibility
 from successful JSON loading.

@@ -61,7 +61,7 @@ lower 35% of that axis. Generated annotations are labelled in each scene.
 
 Collision geometry is a union of boxes fitted to occupied cells in a 3x3x3
 grid of the original point cloud. Selection uses ray/box surface intersections
-and the paper's width/avoidance score. Since 0.6.0, each approach proposal is
+and the paper's width/avoidance score. Each approach proposal is
 intersected with that proxy, inserted 18 mm along +Z, and centred across the
 local pad section **before** any mode is selected. No lateral X search or
 mode-specific repair is applied. Failed proposals remain visible and are
