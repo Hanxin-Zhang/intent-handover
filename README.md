@@ -154,8 +154,18 @@ and links to each scene and selection. It excludes real-robot statistics and
 participant questionnaires; the paper does not report an objective simulation
 success rate for these four method settings.
 
-Convert the exported experiment with the companion benchmark's `from-experiment`
-command, then pass its `trials.json` to `demo --trials`. Add
-`--asset-config /path/to/local_assets.json --video --animation` to replay the
-original UR5e + Robotiq 2F-85 USD and the configured object OBJ meshes.
-See the benchmark's [local asset setup](https://github.com/Hanxin-Zhang/r2handoversim#local-ur5e--robotiq-and-object-meshes).
+For method-preserving replay with R2HandoverSim 0.10.0, first import the original
+proposals and OBJ, calibrate **all candidates** with `prepare-candidates`, and
+create fixed receiver scenes with `receiver-scenes`. Run the four-mode selection
+separately on each receiver scene, using `object_projection` feasibility for the
+companion's Stability rule. Convert each resulting experiment with
+`from-experiment`, then pass its `trials.json` to `demo --trials --video --animation`.
+The prepared trials already carry the original asset binding and pad aperture.
+Audit each resolved trial against its receiver-specific scene and selection.
+
+Follow the [complete calibrated workflow](docs/workflows.md#original-candidates-real-asset-pads-and-fixed-receivers)
+for commands and the reachable-set sampling condition, and the benchmark's
+[local asset setup](https://github.com/Hanxin-Zhang/r2handoversim#local-ur5e--robotiq-and-object-meshes)
+for the UR5e + Robotiq 2F-85 USD and object OBJ files. Applying a fresh asset fit
+only after selecting a proxy grasp can change the method outcome; that legacy
+adapted replay is not evidence that the original selection was preserved.
