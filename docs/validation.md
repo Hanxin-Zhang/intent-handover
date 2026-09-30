@@ -48,3 +48,16 @@ remain outside the validation scope.
   frame/axis/position-anchor conventions are recorded in `paper_details.md`.
 - Version 0.3.0 wheels were built and the new delivery/planning integration was
   exercised outside both source trees using independently installed packages.
+
+## 0.4.0 configured-data follow-up
+
+- Eighteen CPU tests pass, including YAML default resolution, exact cached-point
+  preservation, source hashing, missing-cache-entry reporting and input rejection.
+- The original main config selected han. Imported all 16 existing PLY point
+  clouds (8192 points each) plus their cached 1024-point inputs without rescaling.
+  Reported the stale eyeglasses4 entry. Original files/cache were not modified.
+- Ran a real 1000-step original-weight Text2HOI prediction on the imported
+  binoculars cloud with a left-hand prompt; decoded with local MANO and selected
+  a grasp. The full original object cloud survived conversion and Isaac replay.
+- The 0.4.0 wheel's dataset import and cross-package conversion/evaluation ran
+  outside both source directories. Data/derived geometry remain excluded from Git.

@@ -93,3 +93,10 @@ are visual references in Isaac Sim, not additional human-body colliders.
 The 400 curated training sequences, trained intent-specific model, original
 Multi-GraspLLM top-100 annotations and live speech/vision stack are not recreated.
 The neural route continues to use original Text2HOI weights, per release scope.
+
+## Local data now connected (0.4.0)
+
+The original han config's 16 available object point clouds and neural input
+cache can now be imported directly. This restores those local object inputs;
+original triangle meshes, grasp/region annotations and split labels remain
+unavailable in that config. See [dataset import and provenance](dataset.md).

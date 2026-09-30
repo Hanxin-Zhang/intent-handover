@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "Please cite the accompanying paper when using this release."
 type: software
 title: "Intent-Handover: Grounding Language in Human-Usage Regions for Trustworthy Robot-to-Human Handovers"
-version: 0.3.0
+version: 0.4.0
 authors:
   - family-names: Zhang
     given-names: Hanxin

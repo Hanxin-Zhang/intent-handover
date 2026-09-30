@@ -8,19 +8,26 @@ from .geometry import corners, gripper_boxes, moved
 EDGES = [(i, j) for i in range(8) for j in range(i + 1, 8) if (i ^ j) in (1, 2, 4)]
 
 
-def svg_scene(boxes, colors):
+def svg_scene(boxes, colors, cloud=None):
     projected = []
     for b in boxes:
         xyz = corners(b)
         projected.append(np.column_stack((xyz[:, 0] + .45 * xyz[:, 1],
                                           -xyz[:, 2] + .25 * xyz[:, 1])))
-    if not projected:
+    cloud_xy = None
+    if cloud is not None:
+        p = np.asarray(cloud)[::max(1, len(cloud)//2048)]
+        cloud_xy = np.column_stack((p[:, 0]+.45*p[:, 1], -p[:, 2]+.25*p[:, 1]))
+    if not projected and cloud_xy is None:
         return ""
-    all_points = np.concatenate(projected)
+    all_points = np.concatenate(projected + ([cloud_xy] if cloud_xy is not None else []))
     lo, hi = all_points.min(0), all_points.max(0)
     scale = 330 / max(float((hi - lo).max()), .01)
     center = (lo + hi) / 2
     lines = []
+    if cloud_xy is not None:
+        for x, y in (cloud_xy-center)*scale+[270, 205]:
+            lines.append(f'<circle cx="{x:.2f}" cy="{y:.2f}" r="1.1" fill="#5dd8c0"/>')
     for xy, color in zip(projected, colors):
         xy = (xy - center) * scale + [270, 205]
         for i, j in EDGES:
@@ -29,8 +36,10 @@ def svg_scene(boxes, colors):
 
 
 def write_report(scene, result, output):
-    boxes = list(scene["object"]["boxes"]) + list(scene["receiving_hand"]["boxes"])
-    colors = ["#5dd8c0"] * len(scene["object"]["boxes"]) + ["#f5b76b"] * len(scene["receiving_hand"]["boxes"])
+    cloud = scene["object"].get("surface_points")
+    objects = list(scene["object"]["boxes"]) if cloud is None else []
+    boxes = objects + list(scene["receiving_hand"]["boxes"])
+    colors = ["#5dd8c0"] * len(objects) + ["#f5b76b"] * len(scene["receiving_hand"]["boxes"])
     if result["selected"]:
         selected = result["selected"]
         boxes += [moved(b, selected["T_object_gripper"]) for b in gripper_boxes(selected["width_m"])]
@@ -44,7 +53,7 @@ def write_report(scene, result, output):
 body{{background:#111b2d;color:#e9f0ff;font:16px system-ui;margin:36px auto;max-width:980px;padding:0 24px}}h1{{font-size:32px}}p{{line-height:1.6;color:#bccbe3}}svg{{width:100%;max-height:460px;background:#18263c;border-radius:16px}}table{{width:100%;border-collapse:collapse}}td,th{{text-align:left;padding:12px;border-bottom:1px solid #35445b}}code{{color:#5dd8c0}}footer{{margin-top:28px;color:#9aaac3}}
 </style><h1>{html.escape(title)}</h1><p>{html.escape(scene['utterance'])}</p>
 <p>Human region: <code>{html.escape(scene['intent']['human_region'])}</code> · Selected: <code>{html.escape(result['selected']['id'] if result['selected'] else 'none')}</code></p>
-{svg_scene(boxes, colors)}<p>Green: object · Orange: receiving hand proxy · Blue: selected gripper</p>
+{svg_scene(boxes, colors, cloud)}<p>Green: {'source point cloud' if cloud is not None else 'object proxy'} · Orange: receiving hand proxy · Blue: selected gripper</p>
 <table><tr><th>Candidate</th><th>Width (mm)</th><th>Avoidance cost ↓</th><th>Constraint result</th></tr>{rows}</table>
 <footer>{html.escape(result['provenance'])}. Geometry is in metres. Lower avoidance cost is preferred.</footer></html>'''
     Path(output).write_text(document)

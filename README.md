@@ -29,11 +29,29 @@ visualization. No web server or CDN is needed. On Windows, activate with
 intent-handover demo --object hammer --mode A1 --output outputs/ablation
 intent-handover select outputs/demo/hammer_scene.json --output outputs/custom
 intent-handover prompt --instruction "I need to tighten a screw."
+python -m pip install -e '.[dataset]'
 python -m unittest discover -s tests -v
 ```
 
 If an installed console command is unavailable, use `python -m intent_handover`
 with the same arguments.
+
+## Use the existing local dataset config
+
+The original project defaults to `dataset: han`. Its available data contains
+16 object point clouds, each with 8192 source points and 1024 cached points.
+Import directly from that config:
+
+```bash
+python -m pip install -e '.[dataset]'
+intent-handover dataset --config /path/to/Text2HOI/configs/config.yaml \
+  --output outputs/han_dataset
+```
+
+This preserves original coordinates, names and dimensions, and produces neural
+input clouds, viewable scenes, grasp-selection demos and a source manifest.
+The generated hand, candidate grasps and receiving-zone labels are explicitly
+marked as demo annotations. See [dataset setup and provenance](docs/dataset.md).
 
 ## Included functionality
 

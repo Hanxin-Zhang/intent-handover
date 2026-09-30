@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+- Read the original main/dataset YAML config and import locally available han data.
+- Preserve source point clouds, cached neural inputs, coordinates, scale and hashes.
+- Report missing cached objects without inventing replacements.
+- Generate explicitly labelled grasp/hand/region demo annotations for real objects.
+- Display imported point clouds and preserve them through MANO decoding.
+
 ## 0.3.0
 
 - Implement Sec. III-B ergonomic delivery from calibrated skeletal keypoints,

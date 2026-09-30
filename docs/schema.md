@@ -63,3 +63,12 @@ Legacy candidates without the ray origin retain their supplied surface point.
 
 `handover.skeleton.v1` and `handover.delivery.v1` are described in
 [the execution recipe](paper_details.md).
+
+## Configured dataset scenes (0.4.0)
+
+Optional `object.surface_points` contains original object-frame XYZ points.
+The HTML report displays these points; collision and width checks still use
+`object.boxes`. `source_data` records paths, hashes, original counts and scale.
+`annotation_status` identifies generated annotations. `evaluation_split` is
+passed explicitly to the benchmark. Dataset import/export details and generated
+annotation conventions are documented in [dataset.md](dataset.md).

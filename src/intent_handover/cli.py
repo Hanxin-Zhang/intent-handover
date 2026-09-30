@@ -9,6 +9,12 @@ from .report import write_report
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Intent-Handover runnable method demos")
     sub = parser.add_subparsers(dest="command", required=True)
+    dataset = sub.add_parser("dataset", help="Import original local objects from a Text2HOI han config")
+    dataset.add_argument("--config", type=Path, required=True)
+    dataset.add_argument("--project-root", type=Path)
+    dataset.add_argument("--object", default="all")
+    dataset.add_argument("--scale-to-m", type=float, default=1.)
+    dataset.add_argument("--output", type=Path, default=Path("outputs/dataset"))
     demo = sub.add_parser("demo", help="Run bundled CPU examples")
     demo.add_argument("--object", choices=[*NAMES, "all"], default="all")
     demo.add_argument("--mode", choices=MODES, default="FS")
@@ -43,6 +49,11 @@ def main(argv=None):
     neural.add_argument("--output", type=Path, default=Path("outputs/text2hoi"))
     args = parser.parse_args(argv)
     try:
+        if args.command == "dataset":
+            from .dataset import import_dataset
+            manifest = import_dataset(args.config, args.output, args.project_root, args.object, args.scale_to_m)
+            print(f"Imported {len(manifest['objects'])} objects; {len(manifest['missing'])} missing cached assets. Manifest: {(args.output/'dataset.json').resolve()}")
+            return
         if args.command == "delivery":
             from .execution import delivery_target
             result = delivery_target(json.loads(args.scene.read_text()), json.loads(args.selection.read_text()),
@@ -78,7 +89,8 @@ def main(argv=None):
             stem.with_suffix(".json").write_text(json.dumps(result, indent=2, allow_nan=False))
             (args.output / f"{name}_scene.json").write_text(json.dumps(scene, indent=2, allow_nan=False))
             import numpy as np
-            np.save(args.output / f"{name}_points.npy", sample_surface(scene), allow_pickle=False)
+            surface = scene["object"].get("surface_points")
+            np.save(args.output / f"{name}_points.npy", np.asarray(surface) if surface is not None else sample_surface(scene), allow_pickle=False)
             write_report(scene, result, stem.with_suffix(".html"))
             selected = result["selected"]
             print(f"{name}: {selected['id'] if selected else result['status']} -> {stem.with_suffix('.html').resolve()}")
