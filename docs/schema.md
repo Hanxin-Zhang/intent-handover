@@ -51,3 +51,15 @@ Both are in canonical object coordinates. `receiving_hand.mesh` may contain
 MANO vertices/faces for the simulator viewer. The generated `boxes` approximate
 the skeleton and remain the collision representation. The bridge also records
 prediction frame and source checkpoint hashes.
+
+## Computed approach intersections (0.3.0)
+
+A candidate may provide `approach_ray_origin_object` on its approach axis,
+outside the object. The selector raycasts along gripper local +Z against the
+union of oriented object boxes and computes the nearest forward surface hit.
+This overrides `approach_point_object`; a miss rejects the candidate. The
+selection records `approach_source`. The three bundled demos use this path.
+Legacy candidates without the ray origin retain their supplied surface point.
+
+`handover.skeleton.v1` and `handover.delivery.v1` are described in
+[the execution recipe](paper_details.md).

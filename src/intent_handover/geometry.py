@@ -113,6 +113,30 @@ def projected_width(boxes, closing_axis):
     return float(coordinates.max() - coordinates.min())
 
 
+def approach_intersection(boxes, origin, direction):
+    """First ray/surface intersection for an outside origin and a union of OBBs."""
+    origin, direction = vector(origin), unit(direction)
+    if any(contains(b, origin) for b in boxes):
+        raise ValueError("Approach ray origin must lie outside the object")
+    first = np.inf
+    for b in boxes:
+        rotation = box_pose(b)[:3, :3]
+        local = rotation.T@(origin-vector(b["center"]))
+        ray = rotation.T@direction
+        lower, upper = -np.inf, np.inf
+        for i, extent in enumerate(b["half_extents"]):
+            if abs(ray[i]) < 1e-12:
+                if abs(local[i]) > extent:
+                    lower, upper = np.inf, -np.inf
+                    break
+            else:
+                pair = sorted(((-extent-local[i])/ray[i], (extent-local[i])/ray[i]))
+                lower, upper = max(lower, pair[0]), min(upper, pair[1])
+        if upper >= max(lower, 0.):
+            first = min(first, max(lower, 0.))
+    return None if not np.isfinite(first) else origin+first*direction
+
+
 def gripper_boxes(opening):
     """Simplified parallel gripper, TCP at finger tips, closing axis +Y, approach +Z."""
     if not np.isfinite(opening) or opening < 0:

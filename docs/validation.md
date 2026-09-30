@@ -35,3 +35,16 @@ remain outside the validation scope.
 - MANO models and generated hand meshes are excluded from the source release.
 - Version 0.2.0 wheel installed independently; all three CPU demos ran from
   outside the source directory.
+
+## 0.3.0 paper-detail follow-up
+
+- Fifteen CPU tests pass, including ray/surface intersection, incorrect supplied
+  surface annotations, comfortable radius/height, 15-degree extension, pose
+  composition, forward sign and antipodal minimum-angle rotation.
+- The authored seated-receiver skeleton produced a full delivery target. The
+  companion benchmark solved this target with numerical pose IK, generated a
+  collision-checked path, and replayed it successfully in Isaac Sim 5.0.
+- The source PDF's Fig. 3 and Sec. III-B formulas were visually checked; explicit
+  frame/axis/position-anchor conventions are recorded in `paper_details.md`.
+- Version 0.3.0 wheels were built and the new delivery/planning integration was
+  exercised outside both source trees using independently installed packages.

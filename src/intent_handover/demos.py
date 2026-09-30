@@ -52,7 +52,8 @@ def build_scene(name):
             hit = list(part["center"])
             hit[2] += part["half_extents"][2]
         candidates.append({"id": cid, "T_object_gripper": pose(hit, rotation).tolist(),
-                           "approach_point_object": hit})
+                           "approach_point_object": hit,
+                           "approach_ray_origin_object": (np.asarray(hit)-.2*rotation[:, 2]).tolist()})
     utterance = {"hammer": "I need to hammer a nail.",
                  "screwdriver": "I want to tighten this screw.",
                  "bottle": "Pass me the bottle so I can drink."}[name]

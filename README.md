@@ -44,13 +44,16 @@ with the same arguments.
 | Prompts | Authored structured-intent system prompt and examples, available through the `prompt` command |
 | Text2HOI | Optional original-weight coarse DDPM inference; see [setup](docs/text2hoi.md) |
 | Visualization | Standalone HTML with object, receiving hand and gripper geometry |
+| Ergonomic delivery | Shoulder/elbow/wrist keypoints → comfortable radius, 15° extension and a world-frame target; see [paper details](docs/paper_details.md) |
 | Predicted hand integration | Decode Text2HOI outputs with local MANO, select a grasp, and export the mesh/proxies to R2HandoverSim |
 
 The default examples use **original procedural box geometry and fixed receiving
 hand proxies**, not neural predictions or recovered paper trials. Prompt output
 is ready to send to your chosen model; the demo does not make an API call.
 The supplied region geometry is an annotation, not a segmentation inferred from
-text. FS filters the candidate approach-axis intersection against that geometry.
+text. Bundled examples compute the first approach-ray intersection with the object
+boxes and filter that surface point against the intended region. Legacy inputs
+may still supply a surface annotation directly.
 
 The optional neural adapter reuses the **original Text2HOI pretrained weights**;
 there are no new Intent-Handover weights to download or train. It produces coarse
@@ -76,9 +79,10 @@ prototype and implements the missing lightweight constraints and interfaces.
 The default gripper is a box proxy with an 85 mm aperture, not Panda or Robotiq
 CAD. Geometric feasibility is simplified; no force closure, IK or trajectory
 safety guarantee is implied by a selected grasp. A2/A3 choose the first feasible
-candidate in input order, an explicit demo tie policy. Full speech/vision,
+candidate in input order, an explicit demo tie policy. The companion benchmark can solve a delivery target with numerical pose IK and
+RRT-Connect using explicit collision proxies. Full speech/vision,
 MediaPipe tracking, hardware control, training and user-study replication are
-outside this initial release.
+outside this release.
 
 Original code is MIT; vendored Text2HOI retains its own MIT notice. No MANO
 models, third-party dataset meshes, checkpoints or participant recordings are

@@ -19,6 +19,11 @@ def main(argv=None):
     run.add_argument("--output", type=Path, default=Path("outputs/custom"))
     prompt = sub.add_parser("prompt", help="Print the authored system/user prompts for a VLM or LLM")
     prompt.add_argument("--instruction", required=True)
+    delivery = sub.add_parser("delivery", help="Compute paper Sec. III-B delivery target from skeletal keypoints")
+    delivery.add_argument("--scene", type=Path, required=True)
+    delivery.add_argument("--selection", type=Path, required=True)
+    delivery.add_argument("--skeleton", type=Path, required=True)
+    delivery.add_argument("--output", type=Path, default=Path("outputs/delivery.json"))
     bridge = sub.add_parser("from-prediction", help="Decode a neural hand with local MANO, then select a grasp")
     bridge.add_argument("--scene", type=Path, required=True)
     bridge.add_argument("--prediction", type=Path, required=True)
@@ -38,6 +43,14 @@ def main(argv=None):
     neural.add_argument("--output", type=Path, default=Path("outputs/text2hoi"))
     args = parser.parse_args(argv)
     try:
+        if args.command == "delivery":
+            from .execution import delivery_target
+            result = delivery_target(json.loads(args.scene.read_text()), json.loads(args.selection.read_text()),
+                                     json.loads(args.skeleton.read_text()))
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(json.dumps(result, indent=2, allow_nan=False))
+            print(args.output.resolve())
+            return
         if args.command == "prompt":
             from importlib.resources import files
             catalog = [{"object_id": n, "regions": list(load_scene(n)["object"]["usage_regions"])} for n in NAMES]

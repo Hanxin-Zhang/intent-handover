@@ -1,6 +1,6 @@
 """Intent-aware candidate filtering and avoidance-cost ranking."""
 import numpy as np
-from .geometry import contains, projected_width, transform, unit, vector
+from .geometry import approach_intersection, contains, projected_width, transform, unit, vector
 
 MODES = {"FS": (True, True), "A1": (False, True),
          "A2": (True, False), "A3": (False, False)}
@@ -38,23 +38,28 @@ def select_grasp(scene, mode="FS"):
             raise ValueError(f"Duplicate candidate id: {cid}")
         seen.add(cid)
         t = transform(candidate["T_object_gripper"])
-        hit = vector(candidate["approach_point_object"])
+        resolved = "approach_ray_origin_object" in candidate
+        if resolved and np.linalg.norm(np.cross(vector(candidate["approach_ray_origin_object"])-t[:3, 3], t[:3, 2])) > 1e-6:
+            raise ValueError("Approach ray origin must lie on the gripper approach axis")
+        hit = (approach_intersection(scene["object"]["boxes"], candidate["approach_ray_origin_object"], t[:3, 2])
+               if resolved else vector(candidate["approach_point_object"]))
         # Width of the provided object proxy along gripper closing direction.
         width = projected_width(scene["object"]["boxes"], t[:3, 1])
-        in_usage = any(contains(b, hit) for b in regions[intended])
-        on_object = any(contains(b, hit) for b in scene["object"]["boxes"])
+        in_usage = hit is not None and any(contains(b, hit) for b in regions[intended])
+        on_object = hit is not None and any(contains(b, hit) for b in scene["object"]["boxes"])
         distance = float(np.linalg.norm(t[:3, 3] - center))
         cosine = float(unit(t[:3, 2]) @ direction)
         cost = cosine - distance
         rejected = []
         if not on_object:
-            rejected.append("approach_point_outside_object")
+            rejected.append("approach_ray_misses_object" if resolved else "approach_point_outside_object")
         if width > max_width + 1e-9:
             rejected.append("width_exceeds_aperture")
         if use_region and in_usage:
             rejected.append("human_usage_region")
         rows.append({"id": cid, "T_object_gripper": t.tolist(),
-                     "approach_point_object": hit.tolist(), "width_m": width,
+                     "approach_point_object": hit.tolist() if hit is not None else None, "width_m": width,
+                     "approach_source": "ray/OBB intersection" if resolved else "supplied surface annotation",
                      "cosine": cosine, "distance_m": distance, "avoidance_cost": cost,
                      "in_human_region": in_usage, "valid": not rejected,
                      "rejection_reasons": rejected})

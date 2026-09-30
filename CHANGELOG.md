@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0
+
+- Implement Sec. III-B ergonomic delivery from calibrated skeletal keypoints,
+  including comfortable reach, wrist extension, minimal rotation and pose chains.
+- Compute approach-axis surface intersections for bundled grasp candidates.
+- Add a portable skeleton example and a paper-to-code implementation map.
+
 ## 0.2.0
 
 - Connect original H2O Text2HOI predictions to grasp selection through optional

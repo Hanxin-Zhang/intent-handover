@@ -69,7 +69,8 @@ r2handoversim demo --trial outputs/neural_trial.json --headless \
 ```
 
 The simulator renders the decoded mesh and evaluates box proxies around the
-predicted skeleton. A one-frame coarse prediction on procedural geometry is a
+predicted skeleton by default. Add `--hand-collision mesh` to evaluate safety
+against the static hand triangles in Isaac Sim; planning remains box-based. A one-frame coarse prediction on procedural geometry is a
 working integration example, not a guarantee of realistic contact or the
 paper's quality. The refiner and arbitrary-object grasp generation remain
 outside this release.
