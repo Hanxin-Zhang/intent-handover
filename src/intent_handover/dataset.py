@@ -59,6 +59,8 @@ def bootstrap_scene(name, cloud):
         boxes.append(box((a+b)/2, np.maximum((b-a)/2, .0002), label="point_cloud_proxy"))
     region_hi = hi.copy(); region_hi[long] = lo[long]+.35*ext[long]
     receiving = box((lo+region_hi)/2, (region_hi-lo)/2, label="demo_receiving_zone")
+    free_lo = lo.copy(); free_lo[long] = region_hi[long]
+    unreserved = box((free_lo+hi)/2, (hi-free_lo)/2, label="unreserved_surface")
     direction = np.eye(3)[long]
     hand_center = center.copy(); hand_center[long] = lo[long]-.07
     side_axes = [i for i in range(3) if i != long]
@@ -86,7 +88,7 @@ def bootstrap_scene(name, cloud):
         "intent": {"object_id": name, "human_region": "demo_receiving_zone", "robot_region": "unreserved_surface",
                    "hand": "right", "text2hoi_prompt": f"Grasp a {name} with right hand."},
         "object": {"id": name, "boxes": boxes, "surface_points": p.tolist(),
-                   "usage_regions": {"demo_receiving_zone": [receiving]}},
+                   "usage_regions": {"demo_receiving_zone": [receiving], "unreserved_surface": [unreserved]}},
         "receiving_hand": {"center": hand_center.tolist(), "direction": direction.tolist(),
                            "palm_normal": direction.tolist(), "boxes": [hand]},
         "gripper": {"max_opening_m": .085, "geometry": "parallel-jaw box proxy"},

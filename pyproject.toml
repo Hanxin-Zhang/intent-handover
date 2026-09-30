@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "intent-handover"
-version = "0.4.0"
+version = "0.5.0"
 description = "Runnable intent-aware handover grasp selection and optional Text2HOI inference"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -15,7 +15,7 @@ license = {text = "MIT"}
 dataset = ["PyYAML>=6", "trimesh>=4"]
 text2hoi = ["torch>=1.13", "tqdm>=4.60"]
 download = ["gdown>=5.0"]
-mano = ["torch>=1.13", "smplx>=0.1.28", "scipy>=1.10", "chumpy>=0.70", "numpy<2"]
+mano = ["torch>=1.13", "smplx>=0.1.28", "scipy>=1.10", "six>=1.11", "numpy<2"]
 
 [project.urls]
 Repository = "https://github.com/Hanxin-Zhang/intent-handover"

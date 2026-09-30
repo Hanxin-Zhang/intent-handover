@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0
+
+- Add a one-command original-weight Text2HOI/MANO/selection pipeline with stage
+  tracking, optional structured intent and optional ergonomic delivery.
+- Consume structured intent responses and build prompts from actual scene catalogs.
+- Export paired FS/A1/A2/A3 experiments for bundled or locally imported objects.
+- Verify checkpoint SHA-256 before use/replacement and reject partial downloads.
+- Fix fresh-environment Chumpy installation guidance and missing region catalogs.
+
 ## 0.4.0
 
 - Read the original main/dataset YAML config and import locally available han data.

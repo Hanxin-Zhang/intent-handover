@@ -61,3 +61,19 @@ remain outside the validation scope.
   a grasp. The full original object cloud survived conversion and Isaac replay.
 - The 0.4.0 wheel's dataset import and cross-package conversion/evaluation ran
   outside both source directories. Data/derived geometry remain excluded from Git.
+
+## 0.5.0 runnable-workflow follow-up
+
+- Twenty-three tests pass, including structured-intent rejection, paired ablation
+  exports, failed-run status replacement and corrupt-download preservation.
+- The one-command pipeline verified all three original checkpoint hashes, ran
+  1000 diffusion steps on CUDA, decoded local MANO and selected a bottle grasp.
+  Its manifest converted directly to an Isaac Sim mesh-collision replay; all
+  active demo criteria passed and screenshot/animated USD exports completed.
+- Reimported all 16 configured objects with complete demo region catalogs and
+  exported all 64 FS/A1/A2/A3 selections plus the experiment manifest.
+- Reproduced Chumpy 0.70's isolated-build missing-pip failure with modern pip;
+  verified the documented no-build-isolation/no-deps installation path.
+- Built and independently installed the 0.5.0 wheel. Structured-intent selection,
+  catalog prompts, checkpoint verification and paired-ablation exports ran
+  outside the source directories and connected to the installed benchmark.

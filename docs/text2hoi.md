@@ -13,13 +13,17 @@ your hardware, then install the adapter dependencies and official OpenAI CLIP:
 python -m pip install --upgrade pip setuptools wheel
 python -m pip install -e '.[text2hoi,download]'
 python -m pip install 'git+https://github.com/openai/CLIP.git'
-python scripts/download_checkpoints.py
+intent-handover download-weights
 ```
 
 The downloader fetches H2O `texthom.pth`, `pointfeat.pth`, and
 `contact_estimator.pth` from the [original Text2HOI checkpoint folder](https://drive.google.com/drive/folders/1bfYF94-dVy-mA0n4cIRb_wI4ohPC6KK5).
 If Google Drive throttles the download, obtain the three files manually and put
 them in `checkpoints/h2o/`. Weights are not included in Git or relicensed here.
+`intent-handover download-weights --verify-only` checks local files against the
+bundled SHA-256 catalog. Downloads are checked before replacing any existing
+file; a corrupt partial download is removed. Use `--force` to replace a corrupt
+existing checkpoint. The `pipeline` command also checks all three hashes.
 CLIP may download its own pretrained model on first use.
 
 ## Run

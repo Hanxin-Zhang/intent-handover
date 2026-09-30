@@ -35,8 +35,13 @@ def load_legacy_mano(path):
                 full = inspect.getfullargspec(function)
                 return arg_spec(full.args, full.varargs, full.varkw, full.defaults)
             inspect.getargspec = getargspec
-        with Path(path).open("rb") as stream:
-            data = pickle.load(stream, encoding="latin1")
+        try:
+            with Path(path).open("rb") as stream:
+                data = pickle.load(stream, encoding="latin1")
+        except ModuleNotFoundError as exc:
+            if exc.name == "chumpy":
+                raise ImportError("Legacy MANO needs Chumpy. After installing '.[mano]', run: python -m pip install --no-build-isolation --no-deps chumpy==0.70") from exc
+            raise
         data = {k: np.asarray(v.r) if hasattr(v, "r") else v for k, v in data.items()}
         return Struct(**data)
     finally:

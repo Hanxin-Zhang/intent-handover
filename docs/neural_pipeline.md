@@ -9,10 +9,16 @@ without any neural dependencies.
 Inside your neural Python environment:
 
 ```bash
+python -m pip install --upgrade pip setuptools wheel
 python -m pip install -e '.[text2hoi,mano,download]'
+python -m pip install --no-build-isolation --no-deps chumpy==0.70
 python -m pip install 'git+https://github.com/openai/CLIP.git'
-python scripts/download_checkpoints.py
+intent-handover download-weights
 ```
+
+Chumpy 0.70 uses a legacy setup script that imports pip. Install it after the
+extras with build isolation disabled, as above; the extras provide its runtime
+dependencies. This avoids the missing-pip error in fresh environments.
 
 Obtain MANO separately under its original terms. `--mano-models` must point to
 the directory containing `MANO_RIGHT.pkl` and/or `MANO_LEFT.pkl`. These are
@@ -20,6 +26,41 @@ trusted local model files; no model or decoded mesh is bundled here. Legacy
 Chumpy-based files are supported on Python 3.11 through temporary compatibility
 aliases during loading; global NumPy/inspect names are restored afterwards.
 The optional MANO extra pins NumPy below 2 for legacy compatibility.
+
+## One-command workflow
+
+After the installation above:
+
+```bash
+intent-handover pipeline --object bottle --checkpoints checkpoints/h2o \
+  --mano-models /path/to/mano/models --device cuda --seed 0 \
+  --output outputs/pipeline
+```
+
+Use `--scene outputs/han_dataset/bottle_scene.json` for an imported object
+(check the exact path in `dataset.json`). `--intent response.json` accepts the
+structured model response described in [workflows](workflows.md).
+`--skeleton examples/seated_receiver.json` optionally adds ergonomic delivery;
+use your calibrated keypoints for a real receiving target.
+
+`pipeline.json` records the current stage, status and relative output paths.
+Failures overwrite the previous run status, so an old successful run cannot be
+mistaken for the current attempt. A completed prediction with no feasible grasp
+returns a nonzero CLI exit code and records `selection_status` separately.
+
+In the benchmark environment:
+
+```bash
+r2handoversim from-pipeline \
+  --pipeline /path/to/intent-handover/outputs/pipeline/pipeline.json \
+  --output outputs/neural_trial.json
+r2handoversim demo --trial outputs/neural_trial.json --headless \
+  --hand-collision mesh --screenshot --animation --output outputs/neural_replay
+```
+
+If the pipeline includes a delivery target, install the benchmark's `[planning]`
+extra: conversion then runs IK and trajectory planning. Otherwise it uses the
+standard replay placement. The individual commands below remain available.
 
 ## 2. Generate an object and predict the receiving hand
 

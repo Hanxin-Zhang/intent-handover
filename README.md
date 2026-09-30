@@ -40,6 +40,25 @@ python -m unittest discover -s tests -v
 If an installed console command is unavailable, use `python -m intent_handover`
 with the same arguments.
 
+## Complete workflows
+
+```bash
+# Run all four method ablations on the three bundled objects:
+intent-handover ablate --output outputs/ablation
+# Apply a structured intent response:
+intent-handover select outputs/demo/hammer_scene.json \
+  --intent examples/hammer_intent.json --output outputs/intent
+```
+
+The experiment manifest connects directly to the benchmark's `from-experiment`
+command for paired Isaac Sim comparisons. See [workflow commands](docs/workflows.md).
+
+With the optional neural dependencies and local MANO installed,
+`intent-handover pipeline` runs original-weight prediction, MANO decoding and
+selection in one command. It verifies checkpoint hashes and exports a manifest
+that the benchmark accepts through `from-pipeline`.
+See [installation and the complete neural recipe](docs/neural_pipeline.md).
+
 ## Use the existing local dataset config
 
 The original project defaults to `dataset: han`. Its available data contains
