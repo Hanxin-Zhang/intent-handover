@@ -49,9 +49,10 @@ Outputs:
   SHA-256 hashes.
 
 The 99D hand vector contains translation plus sixteen 6D rotations; it is not
-the 48D MANO axis-angle vector. Refiner, MANO decoding and hand-to-object frame
-conversion are not included in this coarse adapter. The output is not directly
-used as `receiving_hand.center` in the selection JSON. Use upstream decoding
-with separately acquired MANO assets when integrating that representation.
+the 48D MANO axis-angle vector. The refiner is not included. Use the optional `from-prediction` command to decode
+MANO geometry, transform it into the canonical object frame, and run grasp
+selection. Do not copy raw pose translations into `receiving_hand.center`: they
+are expressed relative to the generated object pose. Follow the
+[end-to-end recipe](neural_pipeline.md).
 
 Architecture provenance and modifications are in [THIRD_PARTY.md](../THIRD_PARTY.md).

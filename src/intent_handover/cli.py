@@ -19,6 +19,14 @@ def main(argv=None):
     run.add_argument("--output", type=Path, default=Path("outputs/custom"))
     prompt = sub.add_parser("prompt", help="Print the authored system/user prompts for a VLM or LLM")
     prompt.add_argument("--instruction", required=True)
+    bridge = sub.add_parser("from-prediction", help="Decode a neural hand with local MANO, then select a grasp")
+    bridge.add_argument("--scene", type=Path, required=True)
+    bridge.add_argument("--prediction", type=Path, required=True)
+    bridge.add_argument("--mano-models", type=Path, required=True)
+    bridge.add_argument("--frame", type=int, default=0)
+    bridge.add_argument("--flip-palm-normal", action="store_true")
+    bridge.add_argument("--mode", choices=MODES, default="FS")
+    bridge.add_argument("--output", type=Path, default=Path("outputs/predicted_hand"))
     neural = sub.add_parser("text2hoi", help="Optional coarse prediction using original Text2HOI weights")
     neural.add_argument("--checkpoints", type=Path, required=True)
     neural.add_argument("--point-cloud", type=Path, required=True, help="N x 3 point cloud in metres (.npy)")
@@ -40,7 +48,12 @@ def main(argv=None):
             from .text2hoi import predict
             predict(args)
             return
-        scenes = ([load_scene(n) for n in (NAMES if args.object == "all" else [args.object])]
+        if args.command == "from-prediction":
+            from .prediction_bridge import decode_prediction
+            scenes = [decode_prediction(json.loads(args.scene.read_text()), args.prediction,
+                       args.mano_models, args.frame, args.flip_palm_normal)]
+        else:
+            scenes = ([load_scene(n) for n in (NAMES if args.object == "all" else [args.object])]
                   if args.command == "demo" else [json.loads(args.scene.read_text())])
         args.output.mkdir(parents=True, exist_ok=True)
         for scene in scenes:

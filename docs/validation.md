@@ -1,5 +1,7 @@
 # Release validation — 2026-09-30
 
+## 0.1.0 initial release
+
 - Seven CPU unit tests passed: usage ablation, aperture filtering, scoring,
   malformed inputs, rigid transforms, oriented-box intersections and neural
   point-cloud preprocessing.
@@ -17,5 +19,19 @@
 - A generated scene/selection pair was converted by the companion benchmark
   and successfully replayed in Isaac Sim 5.0.
 
-The full Text2HOI refiner, MANO decoding, live language model, real hardware,
-training and original paper results were not validated by this release.
+At version 0.1.0, MANO decoding was not yet connected. The full Text2HOI
+refiner, live language model, real hardware, training and original paper results
+remain outside the validation scope.
+
+## 0.2.0 follow-up
+
+- Ten CPU tests now pass, including the interleaved 6D rotation convention,
+  object-frame invariance and palm-normal flipping.
+- Decoded the actual H2O coarse output with locally supplied MANO using Python
+  3.11, NumPy 1.26, SMPL-X 0.1.28 and Chumpy 0.70.
+- Grasp selection on the decoded hand produced a valid result. The exported
+  scene/selection pair ran in Isaac Sim, showing the decoded mesh and evaluating
+  its skeletal collision proxies. The bottle example passed all active criteria.
+- MANO models and generated hand meshes are excluded from the source release.
+- Version 0.2.0 wheel installed independently; all three CPU demos ran from
+  outside the source directory.

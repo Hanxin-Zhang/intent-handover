@@ -90,7 +90,7 @@ def predict(args):
             for chunk in iter(lambda: stream.read(1024*1024), b""):
                 result.update(chunk)
         return result.hexdigest()
-    metadata = {"backend": "original Text2HOI coarse DDPM", "refiner": False,
+    metadata = {"backend": "original Text2HOI coarse DDPM", "refiner": False, "dataset": "h2o",
                 "hand": args.hand, "prompt": args.prompt, "seed": args.seed,
                 "frames": args.frames, "device": str(device),
                 "representation": "translation(3) + 16 rotations(6); object translation(3) + rotation(6)",

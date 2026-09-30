@@ -3,7 +3,7 @@
 Runnable core code for **Intent-Handover: Grounding Language in Human-Usage
 Regions for Trustworthy Robot-to-Human Handovers**.
 
-This first release prioritizes working examples. Run three CPU demos with no
+This release prioritizes working examples. Run three CPU demos with no
 GPU, model download, MANO, ROS, or simulator. Each demo filters robot grasps by
 gripper aperture and the intended human usage region, then ranks valid grasps
 using `cos(robot_approach, hand_direction) - distance_m`.
@@ -44,7 +44,7 @@ with the same arguments.
 | Prompts | Authored structured-intent system prompt and examples, available through the `prompt` command |
 | Text2HOI | Optional original-weight coarse DDPM inference; see [setup](docs/text2hoi.md) |
 | Visualization | Standalone HTML with object, receiving hand and gripper geometry |
-| Simulator integration | Export scene + selection to the separate R2HandoverSim repository |
+| Predicted hand integration | Decode Text2HOI outputs with local MANO, select a grasp, and export the mesh/proxies to R2HandoverSim |
 
 The default examples use **original procedural box geometry and fixed receiving
 hand proxies**, not neural predictions or recovered paper trials. Prompt output
@@ -54,9 +54,11 @@ text. FS filters the candidate approach-axis intersection against that geometry.
 
 The optional neural adapter reuses the **original Text2HOI pretrained weights**;
 there are no new Intent-Handover weights to download or train. It produces coarse
-hand/object parameters and contact probabilities, without the refiner or MANO
-mesh decoding. This is an additional inference example, not a silent replacement
-for the fixed hand used in the default grasp-selection demo.
+hand/object parameters and contact probabilities without the refiner. The new
+`from-prediction` command decodes those parameters with your locally licensed
+MANO models and runs grasp selection using that predicted hand. See
+[the end-to-end recipe](docs/neural_pipeline.md). Default CPU demos still use
+fixed hand proxies and do not require MANO.
 
 ## Use your own example
 

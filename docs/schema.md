@@ -43,3 +43,11 @@ r2handoversim demo --trial outputs/trial.json --headless
 Conversion places the selected object/gripper relation at the demo's fixed UR5e
 goal and positions the receiving hand relative to it. It does not plan an
 arbitrary Cartesian target or claim neural hand-pose fidelity.
+
+## Optional predicted-hand geometry (0.2.0)
+
+`receiving_hand.palm_normal` is separate from the wrist-to-finger `direction`.
+Both are in canonical object coordinates. `receiving_hand.mesh` may contain
+MANO vertices/faces for the simulator viewer. The generated `boxes` approximate
+the skeleton and remain the collision representation. The bridge also records
+prediction frame and source checkpoint hashes.
