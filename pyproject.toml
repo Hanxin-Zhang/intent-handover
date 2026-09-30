@@ -17,6 +17,10 @@ text2hoi = ["torch>=1.13", "tqdm>=4.60"]
 download = ["gdown>=5.0"]
 mano = ["torch>=1.13", "smplx>=0.1.28", "scipy>=1.10", "chumpy>=0.70", "numpy<2"]
 
+[project.urls]
+Repository = "https://github.com/Hanxin-Zhang/intent-handover"
+Issues = "https://github.com/Hanxin-Zhang/intent-handover/issues"
+
 [project.scripts]
 intent-handover = "intent_handover.cli:main"
 

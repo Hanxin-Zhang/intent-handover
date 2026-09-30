@@ -8,11 +8,15 @@ GPU, model download, MANO, ROS, or simulator. Each demo filters robot grasps by
 gripper aperture and the intended human usage region, then ranks valid grasps
 using `cos(robot_approach, hand_direction) - distance_m`.
 
+Companion benchmark: [R2HandoverSim](https://github.com/Hanxin-Zhang/r2handoversim).
+
 ## Quick start
 
 Python 3.10 or newer:
 
 ```bash
+git clone https://github.com/Hanxin-Zhang/intent-handover.git
+cd intent-handover
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip setuptools wheel
