@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "intent-handover"
+version = "0.1.0"
+description = "Runnable intent-aware handover grasp selection and optional Text2HOI inference"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.23"]
+license = {text = "MIT"}
+
+[project.optional-dependencies]
+text2hoi = ["torch>=1.13", "tqdm>=4.60"]
+download = ["gdown>=5.0"]
+
+[project.scripts]
+intent-handover = "intent_handover.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+intent_handover = ["assets/*.json", "assets/*.txt"]
+"intent_handover._vendor.text2hoi" = ["LICENSE.txt"]
