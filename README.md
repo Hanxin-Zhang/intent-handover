@@ -8,11 +8,11 @@ Intent-aware grasp selection · Receiving-hand prediction · Ergonomic delivery
 
 [**Paper**](https://robot-future.github.io/intent-handover/IntentHandover_arxiv.pdf) · [**Project**](https://robot-future.github.io/intent-handover/) · [**Quick start**](#quick-start) · [**Demos**](#demo-gallery) · [**R2HandoverSim**](https://github.com/Hanxin-Zhang/r2handoversim)
 
-[![Intent-Handover: a synchronized workspace and grasp-detail replay](docs/media/intent-handover.gif)](docs/media/intent-handover.mp4)
+[![Intent-Handover: a synchronized workspace and grasp-detail replay](docs/media/intent-handover.gif)](https://github.com/Hanxin-Zhang/intent-handover/raw/refs/heads/main/docs/media/intent-handover.mp4)
 
 **One handover. Two perspectives.** Full Strategy with the original UR5e + Robotiq geometry in Isaac Sim.
 
-[▶ Watch the MP4](docs/media/intent-handover.mp4) · [Run the asset workflow →](docs/workflows.md#original-candidates-real-asset-pads-and-fixed-receivers)
+[↓ Download the MP4](https://github.com/Hanxin-Zhang/intent-handover/raw/refs/heads/main/docs/media/intent-handover.mp4) · [Run the asset workflow →](docs/workflows.md#original-candidates-real-asset-pads-and-fixed-receivers)
 
 </div>
 
@@ -20,11 +20,11 @@ Intent-aware grasp selection · Receiving-hand prediction · Ergonomic delivery
 
 ### Objects, hands and viewpoints
 
-[![Can and screwdriver replay with left and right receiving hands](docs/media/receiver-gallery.gif)](docs/media/receiver-gallery.mp4)
+[![Can and screwdriver replay with left and right receiving hands](docs/media/receiver-gallery.gif)](https://github.com/Hanxin-Zhang/intent-handover/raw/refs/heads/main/docs/media/receiver-gallery.mp4)
 
 Can and screwdriver · Left and right receivers · Fixed targets · A2 replay
 
-[▶ Watch the four-scene reel](docs/media/receiver-gallery.mp4) · [Set up receiving hands](https://github.com/Hanxin-Zhang/r2handoversim/blob/main/docs/fixed_receivers.md)
+[↓ Download the four-scene reel](https://github.com/Hanxin-Zhang/intent-handover/raw/refs/heads/main/docs/media/receiver-gallery.mp4) · [Set up receiving hands](https://github.com/Hanxin-Zhang/r2handoversim/blob/main/docs/fixed_receivers.md)
 
 ### Try grasp selection on your CPU
 
