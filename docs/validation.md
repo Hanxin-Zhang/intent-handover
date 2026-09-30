@@ -39,12 +39,28 @@
   All 16 resolved trials pass method audit, including independently recomputed
   whole-object widths. Earlier local-aperture can runs retain all 16 Stability
   failures separately.
+- Prepared 558 original screwdriver candidates (553 fitted, five retained
+  failures) and ran 16 S1 trials using explicit authored usage boxes and the
+  same four-receiver protocol. FS/A2/A3 succeed in 4/4 each; A1 has two Plan
+  and two Affordance first failures. Actual USD finger geometry participates
+  in the latter check. These are local integration settings, not recovered
+  paper split assignments or semantic masks, and not paper ablation statistics.
+  All 16 resolved trials pass method audit, including split/provenance and
+  fixed hand/object geometry. The companion verifies 2,518 recorded frames.
 - Ran 1,000 CPU diffusion steps with the original verified H2O Text2HOI
   weights on can (seed 27), decoded licensed MANO, and selected calibrated
   candidate 12 under whole-object feasibility. The predicted hand and all
   asset-candidate bindings survive the neural bridge. Generated the paper
   Sec. III-B delivery target from the supplied authored skeleton; this is
-  separate from the random-template receiver experiment.
+  separate from the random-template receiver experiment. The original asset
+  replay preserves the prediction, grasp and delivery target (audit equivalent),
+  but fails Plan with collision/search failure: eight IK solutions are found,
+  and endpoint checks reject object/hand, robot self and environment contacts.
+  No target or receiver repair is applied to turn this into a success.
+- Wheel/sdist build and pass `twine check`. The installed wheel imports original
+  candidates, executes projection-feasibility ablations, audits resolved S0/S1
+  trials, and runs all bundled demos outside the checkout. Package dependency
+  checks pass; archives exclude local objects, checkpoints and MANO assets.
 - Original candidates and mesh files, licensed MANO assets and derived replay
   records remain in ignored local outputs. The paper's 400 training trajectories,
   semantic surface masks and original experiment subset are not recovered;

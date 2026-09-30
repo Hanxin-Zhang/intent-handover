@@ -131,7 +131,7 @@ by the companion Stability metric while preserving actual pad aperture for
 control. A scene can therefore have no feasible grasp; retain this outcome.
 Omitting the option preserves the scene's existing policy (default `opening`).
 
-Use a companion version that preserves `fixed_world` in `from-experiment`;
+Use R2HandoverSim 0.10.0 for the validated integration workflow;
 legacy versions overwrite the target. All four modes must see the same prepared
 candidates, hand and object target. Do not apply `sample-receivers` after method
 selection. Run the companion's Isaac replay and `verify-output`, then audit each

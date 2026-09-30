@@ -8,7 +8,8 @@
 - Revalidate every pre-calibrated asset candidate against mesh width, contact
   evidence and robot/frame bindings before FS/A1/A2/A3 selection.
 - Preserve and audit explicit aperture, original object mesh, complete receiving
-  geometry and fixed world receiver/object targets across the companion boundary.
+  geometry, evaluation split/provenance and fixed world receiver/object targets
+  across the companion boundary.
 - Separate actual pad aperture from optional whole-object width feasibility;
   `ablate --feasibility-width-policy object_projection` aligns all modes with
   the companion Stability width rule before ranking.
