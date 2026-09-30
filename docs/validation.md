@@ -2,6 +2,30 @@
 
 ## 0.7.0 integration validation
 
+Post-release checks with the companion's 0.10.0 release candidate also cover
+the benchmark reachable-set condition and a simulator lifecycle correction:
+
+- A multi-object recording run exposed stale PhysX hand-collider state between
+  trials. The companion now creates a fresh USD/PhysX scene per trial and checks
+  eight hand-surface locations before evaluation. All 33 original inputs
+  (16 can, 16 screwdriver and one neural example) were replanned from scratch.
+  Geometry, joint trajectories, five metrics and first failures match the earlier
+  runs. Independent method-side checks preserve every audited method/receiver
+  field and validate all 264 surface probes. Export verification passes for
+  33 trials and 4,101 frames. The interrupted recording batch remains failed;
+  it is not used as successful validation evidence.
+- Two additional can receivers use `sampling.require_reference_ik: true`,
+  defining a shared reference-grasp reachable set before four-mode selection.
+  Both initial proposals pass, with no rejected proposals in this small sample.
+  The eight resulting S0 trials have five successes and three Plan failures;
+  no method failure triggers receiver resampling. All eight resolved method
+  audits, 64 surface probes and 476-frame export checks pass. These samples
+  are recorded separately from the original bounded-receiver batch. They
+  check protocol implementation, not the paper's sampling distribution or
+  success rates. See [protocol differences](paper_details.md#companion-benchmark-protocol-differences).
+
+The original release checks were:
+
 - 55 CPU tests cover annotation frame conversion, numerical rotation repair,
   triangle ray intersections and clipped pad sections, independent asset contact
   validation, fixed receiver replay audits and earlier workflows. Python 3.11 /

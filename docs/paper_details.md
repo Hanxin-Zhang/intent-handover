@@ -127,3 +127,18 @@ and cost before selecting. A sampled receiving hand must also be fixed before
 selection; moving or replacing it afterwards invalidates the result. See
 [the integration contract](geometry_audit.md). The randomized receiver protocol
 is an explicit benchmark condition, not a recovered paper participant trial.
+
+## Companion benchmark protocol differences
+
+The separate benchmark manuscript `IROS26_3330_FI.pdf`, Sec. III-A, requires
+receiver SE(3) poses sampled from a reachable set and then fixed in world
+coordinates. The companion's reference-IK-conditioned sampler implements an
+explicit preselection reachable set; it does not resample failures of FS or an
+ablation. The exact original sampling distribution is unavailable.
+
+The manuscript uses numerical Jacobian IK and RRT-Connect within MoveIt. The
+validated companion uses numerical pose IK and a local RRT-Connect planner
+with original-collider PhysX queries instead of MoveIt. These preserve the
+stated kinds of checks but do not reproduce the original planner's timings,
+search behavior or success statistics. The original 32 bounded-receiver
+integration trials and the additional conditioned-sampling checks are distinct.

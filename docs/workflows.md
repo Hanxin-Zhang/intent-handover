@@ -113,6 +113,14 @@ r2handoversim receiver-scenes --scene outputs/calibrated_bottle_scene.json \
   --output outputs/receiver_scenes
 ```
 
+For the benchmark paper's reachable-set condition, configure the companion's
+receiver sampler with `sampling.require_reference_ik: true` (the 0.10.0 public
+configuration enables this). It checks a shared reference grasp's full-pose IK
+before any method is selected and logs all sampling proposals. The chosen
+method's own Plan criterion is evaluated separately. This is an explicit
+operational definition of the reachable set, not the recovered paper sampling
+distribution. Older bounded samples remain separately labelled validation runs.
+
 For **each** entry in the resulting `scenes.json`, use its scene path and a
 separate output directory. Receiver scene entries are not dataset manifest
 entries: do not pass this manifest to `ablate --manifest`.
