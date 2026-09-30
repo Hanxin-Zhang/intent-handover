@@ -164,3 +164,7 @@ selection contract stores `feasibility_width_policy`. The audit compares a
 resolved `stability_width_m` with the independently recomputed feasibility width
 when object projection is requested. This preserves both physical contacts and
 the shared evaluation rule without changing candidates in the simulator.
+
+Replay audit also preserves an explicit `evaluation_split` and its optional
+`evaluation_split_provenance`. Switching S1 to S0 would skip the Affordance
+criterion and is a contract violation, even when all geometry stays identical.

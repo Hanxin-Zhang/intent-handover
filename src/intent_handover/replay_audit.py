@@ -26,6 +26,11 @@ def audit_replay(scene, selection, trial, delivery=None):
         a, b = np.asarray(a, dtype=float), np.asarray(b, dtype=float)
         return a.shape == b.shape and np.isfinite(a).all() and np.isfinite(b).all() and np.allclose(a, b, atol=1e-8, rtol=0)
     check(selection["object_id"] == scene["object"]["id"] == trial.get("object_id"), "object_id_changed")
+    if "evaluation_split" in scene:
+        check(trial.get("split") == scene["evaluation_split"], "evaluation_split_changed")
+    if "evaluation_split_provenance" in scene:
+        check(trial.get("evaluation_split_provenance") == scene["evaluation_split_provenance"],
+              "evaluation_split_provenance_changed")
     check(saved["id"] == expected["id"] and close(saved["T_object_gripper"], expected["T_object_gripper"])
           and close(saved["width_m"], expected["width_m"])
           and all(close(saved.get(k), expected[k]) for k in ("cosine", "distance_m", "avoidance_cost")),

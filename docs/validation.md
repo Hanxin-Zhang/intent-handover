@@ -10,12 +10,17 @@
   exported all 64 four-mode settings. Original OBJ triangles drive approach hits;
   this batch still uses explicitly labelled proxy pad widths and authored usage
   regions. All 64 selections survived companion conversion and method audit.
+  With the separate whole-object feasibility filter enabled, 60/64 settings
+  have a feasible method candidate; all four bottle modes correctly have none.
+  This broad check still uses proxy pad geometry, not 16-object USD replay.
 - Independently rechecked all 48 calibrated bottle candidates. Three final
   approach rays miss; FS/A2 reject another 13 for the supplied usage region.
   With the original bootstrap hand, FS/A1 choose candidate 42 (43.235 mm), while
   A2/A3 choose candidate 1 (30.958 mm). This is not a grasp success rate.
 - Generated four fixed random left/right MANO receiver scenes (seed 27) in the
-  companion and reran all four modes before conversion. All 16 inputs preserve
+  companion and reran all four modes before conversion. These receiver batches
+  use supplied MANO templates as method hand inputs, not a new Text2HOI
+  prediction per trial. All 16 inputs preserve
   selected pose/aperture, the original object mesh, full hand mesh/boxes and
   fixed receiver/object world poses in the method audit. FS/A1 now select
   candidate 4; A2/A3 select candidate 1. All 16 resolved Isaac trials also pass
@@ -31,7 +36,15 @@
   73.482 and 70.409 mm. Isaac PhysX S0 replay completes all 16 trials:
   FS succeeds in 3/4, A1 in 1/4, A2/A3 in 4/4 each; the four other trials fail
   Plan. This small local integration batch is not a paper ablation estimate.
-  Earlier local-aperture can runs retain all 16 Stability failures separately.
+  All 16 resolved trials pass method audit, including independently recomputed
+  whole-object widths. Earlier local-aperture can runs retain all 16 Stability
+  failures separately.
+- Ran 1,000 CPU diffusion steps with the original verified H2O Text2HOI
+  weights on can (seed 27), decoded licensed MANO, and selected calibrated
+  candidate 12 under whole-object feasibility. The predicted hand and all
+  asset-candidate bindings survive the neural bridge. Generated the paper
+  Sec. III-B delivery target from the supplied authored skeleton; this is
+  separate from the random-template receiver experiment.
 - Original candidates and mesh files, licensed MANO assets and derived replay
   records remain in ignored local outputs. The paper's 400 training trajectories,
   semantic surface masks and original experiment subset are not recovered;

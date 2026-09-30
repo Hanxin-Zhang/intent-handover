@@ -37,16 +37,23 @@ class ReleaseIntegrityTests(unittest.TestCase):
         scene['receiver_protocol']={'policy':'fixed_world'}
         scene['receiver']={'id':'fixed','seed':7,'side':'left','static_world':True,
                            'T_world_hand':pose([.3,0,.7]).tolist()}
+        scene['evaluation_split']='S1'
+        scene['evaluation_split_provenance']='Authored regions for local integration'
         selection=select_grasp(scene);trial=self.trial(scene,selection)
         trial['receiver_protocol']=copy.deepcopy(scene['receiver_protocol'])
         trial['receiver']=copy.deepcopy(scene['receiver'])
         trial['target_T_world_object']=copy.deepcopy(scene['target_T_world_object'])
+        trial['split']='S1'
+        trial['evaluation_split_provenance']=scene['evaluation_split_provenance']
         self.assertEqual(audit_replay(scene,selection,trial)['status'],'equivalent')
         trial['target_T_world_gripper'][0][3]+=.1
         trial['receiver']['T_world_hand'][0][3]+=.1
         del trial['hand_boxes_world']
+        trial['split']='S0'
+        del trial['evaluation_split_provenance']
         issues=audit_replay(scene,selection,trial)['issues']
-        for reason in ('fixed_object_target_changed','fixed_receiver_pose_changed','receiver_proxy_geometry_changed'):
+        for reason in ('fixed_object_target_changed','fixed_receiver_pose_changed','receiver_proxy_geometry_changed',
+                       'evaluation_split_changed','evaluation_split_provenance_changed'):
             self.assertIn(reason,issues)
 
     def test_unmodified_proxy_replay_is_equivalent_but_not_physics_certified(self):
