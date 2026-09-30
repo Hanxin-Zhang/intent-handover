@@ -106,3 +106,34 @@ See [neural setup](neural_pipeline.md) for optional dependencies/weights. This
 uses original H2O Text2HOI weights on a local han object, not a retrained model.
 The generated hand replaces the proxy; object points remain in their original
 frame. Prediction quality is not implied by a completed run.
+
+## Restore locally available original candidates
+
+A separate local source tree contains `panda_handover_obj.pkl` with 6,827
+region-grouped Panda base poses across the same 16 objects, plus original OBJ
+meshes. These are separate from the configured point-cloud cache above.
+Import trusted local files (pickle inputs must be trusted):
+
+```bash
+intent-handover import-grasps --scene outputs/han_dataset/bottle_scene.json \
+  --annotations /path/to/Text2HOI/panda_handover_obj.pkl \
+  --control-points /path/to/Text2HOI/data/gripper/gripper_control_points/panda_gripper_coords.pickle \
+  --mesh /path/to/Text2HOI/data/han/meshes/bottle.obj \
+  --output outputs/annotated_bottle
+```
+
+The importer preserves all proposals in archive order, source hashes, raw
+transforms, part names and frame conversion. The source control points define
++Y closure, +Z approach, fingertip origin and pad-centre score reference. Only
+small numerical rotation errors are repaired. Default Y centring is performed
+before selection; `--no-center` only converts the frame. No 18 mm insertion is
+added to these existing annotated grasps. With `--mesh`, approach intersections
+use triangles, while width remains explicitly `local_pad_proxy` until the
+companion prepares the actual asset pads. Input mesh units/frame must match the
+scene; no alignment or scaling is inferred.
+
+Existing usage regions and receiving-hand geometry are retained. Candidate
+part names are not interpreted as segmentation or ground truth. The original
+paper trial subset is unverified. Source data and generated scenes remain local,
+excluded from the package. See [asset integration](geometry_audit.md) for the
+preparation → fixed receiver → four-mode selection → replay workflow.

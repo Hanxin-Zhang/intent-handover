@@ -3,7 +3,7 @@
 Runnable core code for **Intent-Handover: Grounding Language in Human-Usage
 Regions for Trustworthy Robot-to-Human Handovers**.
 
-Version 0.6.0 provides an offline method implementation with optional original-weight
+Version 0.7.0 provides an offline method implementation with optional original-weight
 neural inference. Run three CPU demos with no
 GPU, model download, MANO, ROS, or simulator. Each demo filters robot grasps by
 gripper aperture and the intended human usage region, then ranks valid grasps
@@ -80,9 +80,10 @@ marked as demo annotations. See [dataset setup and provenance](docs/dataset.md).
 New imports insert and centre candidate grasps before selection and measure
 width over the local proxy finger footprint. This fixes surface-only TCPs and
 whole-object aperture estimates in imported examples. Contacts remain box-proxy
-estimates. The companion through 0.8.0 needs to preserve the new aperture contract
-and revalidate mesh-driven grasp changes; see [geometry audit and integration
-requirements](docs/geometry_audit.md) before interpreting those replays.
+estimates. Original local Panda proposals and OBJ surfaces can now be imported with
+`import-grasps`. Actual USD pad fitting happens before four-mode selection;
+`asset_mesh_pad` independently rechecks the final mesh geometry. See
+[geometry audit and integration requirements](docs/geometry_audit.md).
 
 Use `intent-handover audit-replay` to compare a benchmark's resolved trial with
 the method selection. It returns a nonzero exit status for changed or unsupported

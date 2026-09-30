@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.0
+
+- Import trusted local Panda candidate archives with explicit source control-point
+  frame conversion, original transforms, hashes and no invented semantic masks.
+- Raycast original triangle surfaces and score from an explicit gripper reference.
+- Revalidate every pre-calibrated asset candidate against mesh width, contact
+  evidence and robot/frame bindings before FS/A1/A2/A3 selection.
+- Preserve and audit explicit aperture, original object mesh, complete receiving
+  geometry and fixed world receiver/object targets across the companion boundary.
+- Correct the reproduction scope: the method paper specifies N candidates, not
+  top-100; locally recovered proposals do not establish the original trial subset.
+
 ## 0.6.0
 
 - Add `audit-replay` to detect stale selections, changed poses/apertures,

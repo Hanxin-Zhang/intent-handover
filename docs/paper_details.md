@@ -1,4 +1,4 @@
-# Paper details implemented in 0.3.0
+# Paper implementation and reproduction boundaries
 
 Source: **Intent-Handover: Grounding Language in Human-Usage Regions for
 Trustworthy Robot-to-Human Handovers**, supplied manuscript `IROS26_3319_FI.pdf`,
@@ -7,8 +7,8 @@ experiment code or a reproduction of the reported user-study measurements.
 
 | Paper detail | Code | Remaining difference |
 |---|---|---|
-| Width and human-usage constraints, Sec. III-A.3 | `core.select_grasp` | Box unions and supplied semantic regions replace original meshes/segmentation |
-| Approach-axis intersection `x_int` | `geometry.approach_intersection` | Exact ray/OBB intersection on the proxy surface; legacy supplied points still accepted |
+| Width and human-usage constraints, Sec. III-A.3 | `core.select_grasp` | Original triangle meshes are supported; human-usage regions still require supplied geometric labels |
+| Approach-axis intersection `x_int` | `geometry.approach_intersection`, `mesh_geometry.mesh_approach_intersection` | Exact ray/triangle or ray/OBB intersection; legacy supplied points still accepted |
 | Minimize cosine minus hand/gripper distance | `core.select_grasp` | Metres, equal coefficients as written in the paper; no additional learned ranking |
 | FS/A1/A2/A3 | `core.MODES` | First feasible input candidate is the explicit A2/A3 tie policy |
 | Shoulder/torso centre and comfortable reach radius | `execution.delivery_target` | Calibrated keypoints supplied offline; no live MediaPipe/RealSense pipeline |
@@ -90,8 +90,11 @@ The robot starts at its home configuration; the target does not get moved to a
 preselected reachable joint pose. Supplied body keypoints and target direction
 are visual references in Isaac Sim, not additional human-body colliders.
 
-The 400 curated training sequences, trained intent-specific model, original
-Multi-GraspLLM top-100 annotations and live speech/vision stack are not recreated.
+The 400 curated training sequences, trained intent-specific model and live
+speech/vision stack are not recreated. Sec. III-A defines N grasp candidates;
+it does not prescribe top-100. A separately located local Panda annotation
+archive now supplies 6,827 proposals for 16 objects, but its exact correspondence
+to the paper experiment subset has not been established.
 The neural route continues to use original Text2HOI weights, per release scope.
 
 ## Local data now connected (0.4.0)
@@ -109,3 +112,18 @@ scenes retain global projection unless they opt in. Separate original OBJ assets
 were found outside the configured point-cloud layout; they remain local and are
 handled by the companion asset adapter. See [geometry audit](geometry_audit.md)
 for the frame contract, remaining paper gaps and required replay revalidation.
+
+## Original candidates and calibrated assets
+
+The annotation importer explicitly converts the Panda base to the method
+finger-tip frame using source control points. Its optional Y centring occurs
+before selection; it adds no proxy insertion. Tiny source rotation errors are
+projected onto SO(3) with the raw values retained. The avoidance reference can
+be the measured pad centre instead of an implicit CAD origin.
+
+For real-asset replay, the companion prepares all candidates first. The method
+independently checks the final mesh width, approach intersection, usage region
+and cost before selecting. A sampled receiving hand must also be fixed before
+selection; moving or replacing it afterwards invalidates the result. See
+[the integration contract](geometry_audit.md). The randomized receiver protocol
+is an explicit benchmark condition, not a recovered paper participant trial.

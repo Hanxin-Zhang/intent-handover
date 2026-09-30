@@ -11,7 +11,7 @@ import numpy as np
 from intent_handover.core import select_grasp
 from intent_handover.dataset import import_dataset
 from intent_handover.demos import load_scene
-from intent_handover.geometry import inverse, points, pose
+from intent_handover.geometry import inverse, moved, points, pose
 from intent_handover.prediction_bridge import decode_prediction
 from intent_handover.replay_audit import audit_replay
 from intent_handover.text2hoi import predict
@@ -28,7 +28,26 @@ class ReleaseIntegrityTests(unittest.TestCase):
                 'max_opening_m':scene['gripper']['max_opening_m'],
                 'object_boxes':copy.deepcopy(scene['object']['boxes']),
                 'usage_boxes':copy.deepcopy(scene['object']['usage_regions'][scene['intent']['human_region']]),
+                'hand_boxes_world':[moved(b,world_object) for b in scene['receiving_hand']['boxes']],
                 'palm_position_world':points(world_object,scene['receiving_hand']['center']).tolist()}
+
+    def test_fixed_receiver_cannot_move_with_object_or_lose_geometry(self):
+        scene=load_scene('hammer')
+        scene['target_T_world_object']=pose([.5,0,.6]).tolist()
+        scene['receiver_protocol']={'policy':'fixed_world'}
+        scene['receiver']={'id':'fixed','seed':7,'side':'left','static_world':True,
+                           'T_world_hand':pose([.3,0,.7]).tolist()}
+        selection=select_grasp(scene);trial=self.trial(scene,selection)
+        trial['receiver_protocol']=copy.deepcopy(scene['receiver_protocol'])
+        trial['receiver']=copy.deepcopy(scene['receiver'])
+        trial['target_T_world_object']=copy.deepcopy(scene['target_T_world_object'])
+        self.assertEqual(audit_replay(scene,selection,trial)['status'],'equivalent')
+        trial['target_T_world_gripper'][0][3]+=.1
+        trial['receiver']['T_world_hand'][0][3]+=.1
+        del trial['hand_boxes_world']
+        issues=audit_replay(scene,selection,trial)['issues']
+        for reason in ('fixed_object_target_changed','fixed_receiver_pose_changed','receiver_proxy_geometry_changed'):
+            self.assertIn(reason,issues)
 
     def test_unmodified_proxy_replay_is_equivalent_but_not_physics_certified(self):
         scene=load_scene('hammer'); selection=select_grasp(scene)

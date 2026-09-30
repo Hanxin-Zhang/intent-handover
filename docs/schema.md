@@ -79,9 +79,9 @@ annotation conventions are documented in [dataset.md](dataset.md).
 `gripper.grasp_frame` defaults to and currently only accepts
 `parallel_jaw_tip`. The origin is the midpoint between the finger tips;
 Y closes and +Z approaches. It is **not** a flange, wrist, Robotiq base, or
-USD link origin. The avoidance distance uses this supplied TCP as `p_g`;
-this reference-point choice is explicit because the paper calls it the gripper
-centre without specifying a CAD frame.
+USD link origin. The avoidance distance uses `gripper.score_reference_point_gripper`
+transformed into object coordinates as `p_g`. It defaults to [0,0,0] for legacy
+scenes; annotated/calibrated scenes explicitly supply their pad centre.
 
 With `width_policy: "local_pad_proxy"`, clip the object-box union to the
 release proxy's entire pad footprint, X ∈ [-0.012, 0.012] m and
@@ -108,6 +108,43 @@ trusted as precomputed acceptance flags. The selector recomputes geometry.
 Selection-level `grasp_contract` records `frame`, `closing_axis`,
 `approach_axis`, `width_policy`, and `max_opening_m`. Consumers must preserve
 the selected pose, aperture and contract or explicitly adapt and revalidate
-them. The benchmark through 0.8.0 does not yet consume this contract; see
-[the concrete integration requirements](geometry_audit.md). Merely accepting
-the JSON does not establish equivalent replay geometry.
+them. Legacy benchmark versions through 0.8.0 do not consume this contract.
+The integrated consumer carries explicit aperture and method evidence; use
+`audit-replay` to verify the actual trial rather than inferring compatibility
+from successful JSON loading.
+
+## Triangle surfaces and asset preparation
+
+Optional `object.mesh` contains finite `vertices` (N×3) and integer triangle
+`faces` (M×3), in metres in the object frame. When present, an outside approach
+ray is required and its nearest triangle intersection replaces the box hit.
+Usage regions still use supplied boxes; triangle geometry does not infer
+semantic masks. `receiving_hand.mesh` uses the same object frame.
+
+`width_policy: "asset_mesh_pad"` requires the mesh and
+`gripper.geometry_contract`. The companion's `handover.asset_gripper.v1`
+contract contains the robot binding, canonical mesh digest,
+`T_asset_tool_grasp_frame` (method fingertip coordinates → asset tool), and
+`pad_window_gripper_m` X/Z bounds. The object/asset transform is therefore
+`T_object_grasp @ inverse(T_asset_tool_grasp_frame)`.
+
+Every candidate retains a `handover.asset_candidate.v1` preparation record,
+including failures. Successful records bind the final pose, robot, mesh,
+width, tool-frame transform, two contacts in both frames, and bilateral pad
+distances. Method selection remeasures the full triangle section, verifies
+its centring and contact positions, and rejects changed bindings or pad errors
+over 0.2 mm. Selection never adjusts a calibrated candidate. `mesh_contact`
+is distinct from `proxy_contact`; neither certifies force closure.
+
+The selection contract also records `score_reference_point_gripper`,
+`approach_surface`, and `geometry_contract`. The integrated trial preserves
+these plus `method_selection` (selected row and mode), `gripper_opening_m`,
+and `gripper_opening_source`. Aperture is in metres, not a linkage joint command.
+
+For fixed receiver scenes, `receiver_protocol.policy` is `fixed_world`;
+`receiver` records identity, side, seed, `T_world_hand` and `static_world`.
+`target_T_world_object` fixes the shared object target. The hand geometry is
+transformed into object coordinates before method selection. Replay auditing
+checks this world target, receiver identity/pose, complete supplied hand
+geometry, object mesh, selected grasp and aperture. Physics/planning are
+separate benchmark validations.

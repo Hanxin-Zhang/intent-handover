@@ -8,7 +8,7 @@ import numpy as np
 from .geometry import box_pose, transform, vector
 
 
-WIDTH_POLICIES = ("global_projection", "local_pad_proxy")
+WIDTH_POLICIES = ("global_projection", "local_pad_proxy", "asset_mesh_pad")
 GRASP_FRAME = "parallel_jaw_tip"
 # Same inner finger faces as geometry.gripper_boxes: Y closes, +Z approaches.
 PAD_X = (-.012, .012)

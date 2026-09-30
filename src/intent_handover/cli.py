@@ -8,6 +8,13 @@ from .demos import NAMES, load_scene
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Intent-Handover runnable method demos")
     sub = parser.add_subparsers(dest="command", required=True)
+    annotations = sub.add_parser("import-grasps", help="Import trusted local region-grouped Panda candidate annotations")
+    annotations.add_argument("--scene", type=Path, required=True)
+    annotations.add_argument("--annotations", type=Path, required=True)
+    annotations.add_argument("--control-points", type=Path, required=True)
+    annotations.add_argument("--mesh", type=Path, help="Optional original object mesh in the same metre/object frame")
+    annotations.add_argument("--no-center", action="store_true", help="Only convert frame; reject off-centre candidates at selection")
+    annotations.add_argument("--output", type=Path, default=Path("outputs/annotated_grasps"))
     audit = sub.add_parser("audit-replay", help="Check whether a benchmark trial preserves the method grasp contract")
     audit.add_argument("--scene", type=Path, required=True)
     audit.add_argument("--selection", type=Path, required=True)
@@ -79,6 +86,26 @@ def main(argv=None):
     neural.add_argument("--output", type=Path, default=Path("outputs/text2hoi"))
     args = parser.parse_args(argv)
     try:
+        if args.command == "import-grasps":
+            from .annotations import import_panda_candidates
+            from .workflows import export_selection
+            mesh = None
+            if args.mesh:
+                import trimesh
+                source = trimesh.load(args.mesh, process=False)
+                if not isinstance(source, trimesh.Trimesh):
+                    raise ValueError("Expected one triangle mesh in the canonical object frame")
+                mesh = {"vertices": source.vertices, "faces": source.faces}
+            scene = import_panda_candidates(json.loads(args.scene.read_text()), args.annotations,
+                                            args.control_points, mesh, not args.no_center)
+            if args.mesh:
+                from .weights import sha256
+                scene["candidate_source"]["mesh_sha256"] = sha256(args.mesh)
+            result, files = export_selection(scene, args.output)
+            print(f"Imported {len(scene['candidates'])} annotated candidates: {(args.output/files['scene']).resolve()}")
+            if result["selected"] is None:
+                parser.exit(2, "No feasible annotated grasp; inspect rejection reasons\n")
+            return
         if args.command == "audit-replay":
             from .replay_audit import audit_replay
             from .artifacts import export_run, write_json

@@ -22,10 +22,10 @@ piece to obtain a feasible width. The two recorded contacts are proxy surface
 extrema. Full finger/palm collision, friction, normals, force closure and
 deformation are outside this selector's certificate.
 
-## Required companion integration
+## Historical integration findings (benchmark 0.8.0)
 
 No benchmark files were changed in this task. Its 0.8.0 `from_selection`
-converter currently discards selected `width_m` and fixes `max_opening_m` at
+converter discarded selected `width_m` and fixes `max_opening_m` at
 0.085 m. `grasp_width` recomputes global projection unless an asset fit exists.
 The real-asset path fits the chosen grasp again, potentially translating it
 in X/Y/Z, and does not rerun method region filtering or rank all candidates.
@@ -71,14 +71,16 @@ The concrete interface requirements are:
 These requirements use the existing object-frame +Y/+Z conventions and do not
 duplicate Robotiq USD calibration in the method package. For local proxy
 candidate updates, the existing `intent-handover select` command recomputes
-the complete candidate set. Exact mesh-based method width remains unsupported;
+the complete candidate set. The new integration below supplies a separate mesh-width policy;
 `proxy_contact` must not be relabelled as benchmark `grasp_contact` evidence.
 
 ## Paper fidelity still outside scope
 
-- Original Multi-GraspLLM top-100 proposals, semantic segmentation and curated
-  400-sequence intent-specific training data are unavailable in this config.
-  The importer supplies 30 geometric proposals and authored regions.
+- A separately located Panda archive supplies 6,827 original local candidates
+  for 16 objects. The method paper defines N proposals, not top-100; the exact
+  paper subset is unverified. Semantic surface masks and the curated 400
+  training sequences are still missing. The basic dataset importer continues
+  to provide 30 bootstrap proposals unless `import-grasps` replaces them.
 - The neural path uses original Text2HOI weights and a coarse prediction/MANO
   bridge; no new weights are trained, and the full interaction refiner is absent.
 - Speech/VLM calls, live calibrated body tracking and robot execution are not
@@ -88,3 +90,49 @@ the complete candidate set. Exact mesh-based method width remains unsupported;
   reference results, not offline simulator outcomes. The reported 88%, 83.33%
   and 73.33% correspond to 132/150, 110/132 and 110/150 respectively. The paper
   provides no objective A1/A2/A3 simulation success rates to reconstruct.
+
+## Current integration
+
+The companion now exports explicit aperture and method evidence. Its
+`prepare-candidates` stage fits every proposal against the original object mesh
+and measured USD pads before selection. The method's `asset_mesh_pad` policy
+independently remeasures triangle sections and validates pose/mesh/robot/frame
+bindings and bilateral contact evidence. Contact fit success alone is not
+method feasibility: bottle has 48 fitted proposals, of which 3 miss the final
+approach ray; FS/A2 reject another 13 at the human usage region.
+
+Use this sequence: import original candidates and OBJ → prepare all candidates
+in the companion → establish each fixed receiver scene → run all four method
+modes on that scene → convert selections without fitting again → plan against
+the fixed receiver → audit the resolved trial. Preserve failures and identical
+receiver seeds across modes. Do not replace a hand after method selection or
+move it to make a failed target reachable.
+
+This integration passes geometry contracts, not a recovered human-study result.
+Source candidate part names are provenance, not semantic surface masks. Legacy
+proxy, mesh-surface/proxy-width, and calibrated mesh-width evaluations must
+remain separately labelled in reports.
+
+## Width conventions and the separate benchmark paper
+
+The method manuscript (IROS26_3319_FI, Sec. III-A) defines object width along
+the closing direction but does not specify a clipping footprint. Local pad
+aperture is this release's explicit geometric implementation choice. The
+separate benchmark manuscript (IROS26_3330_FI, Sec. III-D, Eq. 3) also defines
+width along the closing axis and a maximum of 85 mm. The companion currently
+operationalizes that stability metric as the entire original mesh projection,
+recorded separately as `stability_width_m`; its actual actuator opening remains
+`gripper_opening_m`. Passing a local fit does not imply passing this metric.
+
+All 48 bottle proposals exceed 85 mm under that global projection (range
+89.552–272.047 mm), despite feasible local pad apertures. The 16 fixed-receiver
+bottle trials retain this Stability failure before planning. Neither publication
+fully specifies the footprint operation, so this distinction is a documented
+reproduction limitation, not evidence that the original study used one rule
+or that a failure may be silently repaired.
+
+Unlike the method paper, the benchmark manuscript Sec. III-C explicitly retains
+the top 100 candidates per object. The recovered archive has variable counts
+(48–1,259), with no verified paper ranking/subset. Using every locally available
+candidate is a runnable local-data evaluation, not the benchmark's recovered
+100-candidate protocol. Do not truncate by input order and call it top-100.

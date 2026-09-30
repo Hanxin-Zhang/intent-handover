@@ -84,19 +84,54 @@ intent-handover audit-replay \
 
 Add `--delivery outputs/ergonomic_delivery.json` to require the original
 world-frame delivery target as well. Exit code 0 means the checked grasp,
-proxy annotations and receiver reference point agree; it is not a trajectory,
+annotations and supplied receiver geometry agree; it is not a trajectory,
 collision, holding-force or paper-success certificate. Exit code 2 records the
 differences. The audit recomputes selection to catch stale method outputs.
 
-This adapter implements the documented benchmark 0.7/0.8 width behavior:
-global projection, or `asset_contact_fit.width_m` for bilateral asset fits.
-Current benchmark versions do not propagate `local_pad_proxy`; the audit
-therefore rejects replay of newly imported local-width scenes even if one
-width happens to coincide numerically. Original asset-tool calibration and
-post-fit method reselection are also not certified. The bundled global-width
-proxy demo workflow remains compatible. Future benchmark policies need an
-explicit audit adapter update; merely adding an unused width field is not
-sufficient. See [integration requirements](geometry_audit.md).
+The audit supports the legacy benchmark 0.7/0.8 width behavior and the newer
+explicit-aperture contract. Calibrated asset replay additionally requires
+`asset_mesh_pad`, full preparation evidence and resolved frame/contact fields.
+For mesh or fixed-receiver scenes it checks the original object mesh, the full
+supplied hand geometry, receiver identity/pose and fixed object target. Saved
+avoidance scores must agree with recomputation even if the winning ID is
+unchanged. Trajectory, physics and benchmark metrics remain separate checks.
+
+## Original candidates, real asset pads and fixed receivers
+
+After [importing original local candidates](dataset.md#restore-locally-available-original-candidates),
+use the companion with its local asset configuration. `prepare-candidates`
+requires the companion's Isaac Sim environment; both tools leave source assets
+unchanged and write derived data under `outputs/`.
+
+```bash
+r2handoversim prepare-candidates \
+  --scene outputs/annotated_bottle/bottle_scene.json \
+  --asset-config /path/to/local_assets.json \
+  --output outputs/calibrated_bottle_scene.json
+r2handoversim receiver-scenes --scene outputs/calibrated_bottle_scene.json \
+  --receiver-config /path/to/receivers.json --samples 4 --seed 27 \
+  --output outputs/receiver_scenes
+```
+
+For **each** entry in the resulting `scenes.json`, use its scene path and a
+separate output directory. Receiver scene entries are not dataset manifest
+entries: do not pass this manifest to `ablate --manifest`.
+
+```bash
+intent-handover ablate --scene /path/to/one_receiver_scene.json \
+  --output outputs/one_receiver_methods
+r2handoversim from-experiment \
+  --manifest outputs/one_receiver_methods/experiment.json \
+  --output outputs/one_receiver_trials
+```
+
+Use a companion version that preserves `fixed_world` in `from-experiment`;
+legacy versions overwrite the target. All four modes must see the same prepared
+candidates, hand and object target. Do not apply `sample-receivers` after method
+selection. Run the companion's Isaac replay and `verify-output`, then audit each
+resolved trial against its receiver-specific scene and selection. Keep selection,
+stability and planning failures in the results. See [the width-convention and
+paper-protocol limitations](geometry_audit.md).
 
 ## Neural prediction through simulation
 

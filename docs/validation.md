@@ -1,5 +1,33 @@
 # Release validation — 2026-09-30
 
+## 0.7.0 integration validation
+
+- 54 CPU tests cover annotation frame conversion, numerical rotation repair,
+  triangle ray intersections and clipped pad sections, independent asset contact
+  validation, fixed receiver replay audits and earlier workflows. Python 3.11 /
+  NumPy 1.26 and Python 3.10 / NumPy 2.2 runs are recorded locally.
+- Restored all 6,827 local annotated candidates across 16 original objects and
+  exported all 64 four-mode settings. Original OBJ triangles drive approach hits;
+  this batch still uses explicitly labelled proxy pad widths and authored usage
+  regions. All 64 selections survived companion conversion and method audit.
+- Independently rechecked all 48 calibrated bottle candidates. Three final
+  approach rays miss; FS/A2 reject another 13 for the supplied usage region.
+  With the original bootstrap hand, FS/A1 choose candidate 42 (43.235 mm), while
+  A2/A3 choose candidate 1 (30.958 mm). This is not a grasp success rate.
+- Generated four fixed random left/right MANO receiver scenes (seed 27) in the
+  companion and reran all four modes before conversion. All 16 inputs preserve
+  selected pose/aperture, the original object mesh, full hand mesh/boxes and
+  fixed receiver/object world poses in the method audit. FS/A1 now select
+  candidate 4; A2/A3 select candidate 1. All 16 resolved Isaac trials also pass the same geometry audit. They
+  fail the companion Stability stage: whole-mesh projected width exceeds
+  85 mm, so planning is not attempted. Local contact aperture is not this
+  whole-object metric; zero successes here must not be reported as successful
+  planning or paper-result reproduction.
+- Original candidates and mesh files, licensed MANO assets and derived replay
+  records remain in ignored local outputs. The paper's 400 training trajectories,
+  semantic surface masks and original experiment subset are not recovered;
+  real-user and real-robot results are not inferred from these checks.
+
 ## 0.6.0 release validation
 
 - 42 tests pass in Python 3.11 / NumPy 1.26.0 and in a fresh Python 3.10

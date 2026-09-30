@@ -53,7 +53,7 @@ def write_report(scene, result, output):
 body{{background:#111b2d;color:#e9f0ff;font:16px system-ui;margin:36px auto;max-width:980px;padding:0 24px}}h1{{font-size:32px}}p{{line-height:1.6;color:#bccbe3}}svg{{width:100%;max-height:460px;background:#18263c;border-radius:16px}}table{{width:100%;border-collapse:collapse}}td,th{{text-align:left;padding:12px;border-bottom:1px solid #35445b}}code{{color:#5dd8c0}}footer{{margin-top:28px;color:#9aaac3}}
 </style><h1>{html.escape(title)}</h1><p>{html.escape(scene['utterance'])}</p>
 <p>Human region: <code>{html.escape(scene['intent']['human_region'])}</code> · Selected: <code>{html.escape(result['selected']['id'] if result['selected'] else 'none')}</code></p>
-{svg_scene(boxes, colors, cloud)}<p>Green: {'source point cloud' if cloud is not None else 'object proxy'} · Orange: receiving hand proxy · Blue: selected gripper</p>
+{svg_scene(boxes, colors, cloud)}<p>Green: {'source point cloud' if cloud is not None else 'object proxy'} · Orange: receiving hand proxy · Blue: selected gripper proxy</p>
 <table><tr><th>Candidate</th><th>Width (mm)</th><th>Avoidance cost ↓</th><th>Constraint result</th></tr>{rows}</table>
 <footer>{html.escape(result['provenance'])}. Geometry is in metres. Lower avoidance cost is preferred.
 Width policy: {html.escape(result.get('grasp_contract', {}).get('width_policy', 'global_projection'))}.
