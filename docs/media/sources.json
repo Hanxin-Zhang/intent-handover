@@ -40,12 +40,12 @@
   },
   "gallery": {
     "kind": "evaluated_isaacsim_replay",
-    "source_sha256": "c0ede1f976af9a06d445e867178c82d2bb7b77f6337122a85a5fc49334baf7d0",
+    "source_sha256": "6398e3c842e4b994508d29e18c66fe31884ae5804a1a1405d7cf358c79231ad3",
     "playback_speed": 0.5,
     "presentation": "Four independent trials, aligned at their first frame and held at the end",
     "trials": [
       {
-        "trial_id": "can_A2_can_receiver_27_0000_left",
+        "trial_id": "can_A2_can_receiver_41_0010_left",
         "object_id": "can",
         "variant": "A2",
         "success": true,
@@ -56,10 +56,23 @@
           "reach": true,
           "affordance": null,
           "safe": true
-        }
+        },
+        "camera": "overview",
+        "frames": 79,
+        "terminal_joint_deg": [
+          6.0323,
+          -62.1883,
+          70.4656,
+          -109.3449,
+          -49.1887,
+          -42.9507
+        ],
+        "sample_index": 10,
+        "side": "left",
+        "detail_overview_arrays_identical": true
       },
       {
-        "trial_id": "can_A2_can_receiver_27_0001_right",
+        "trial_id": "can_A2_can_receiver_41_0005_right",
         "object_id": "can",
         "variant": "A2",
         "success": true,
@@ -70,10 +83,23 @@
           "reach": true,
           "affordance": null,
           "safe": true
-        }
+        },
+        "camera": "overview",
+        "frames": 97,
+        "terminal_joint_deg": [
+          13.1951,
+          -72.8928,
+          94.6645,
+          -142.5866,
+          -45.1412,
+          -26.1162
+        ],
+        "sample_index": 5,
+        "side": "right",
+        "detail_overview_arrays_identical": true
       },
       {
-        "trial_id": "screwdriver_A2_screwdriver_receiver_27_0000_left",
+        "trial_id": "screwdriver_A2_screwdriver_receiver_41_0000_left",
         "object_id": "screwdriver",
         "variant": "A2",
         "success": true,
@@ -84,10 +110,23 @@
           "reach": true,
           "affordance": true,
           "safe": true
-        }
+        },
+        "camera": "overview",
+        "frames": 169,
+        "terminal_joint_deg": [
+          19.547,
+          -78.6855,
+          76.5553,
+          -102.2412,
+          -107.9211,
+          94.6029
+        ],
+        "sample_index": 0,
+        "side": "left",
+        "detail_overview_arrays_identical": true
       },
       {
-        "trial_id": "screwdriver_A2_screwdriver_receiver_27_0001_right",
+        "trial_id": "screwdriver_A2_screwdriver_receiver_41_0021_right",
         "object_id": "screwdriver",
         "variant": "A2",
         "success": true,
@@ -98,9 +137,25 @@
           "reach": true,
           "affordance": true,
           "safe": true
-        }
+        },
+        "camera": "overview",
+        "frames": 127,
+        "terminal_joint_deg": [
+          9.2306,
+          -75.2116,
+          86.2145,
+          -121.7259,
+          -78.0028,
+          70.3029
+        ],
+        "sample_index": 21,
+        "side": "right",
+        "detail_overview_arrays_identical": true
       }
-    ]
+    ],
+    "receiver_seed": 41,
+    "camera": "overview",
+    "showcase_selection": "Posture-reviewed examples from the seeded receiver bank"
   },
   "cpu": {
     "kind": "bundled_procedural_geometry",
@@ -124,12 +179,12 @@
       "sha256": "4f52d0f97f132c79806f4aa25a27d262a3546498aa6b4d2972ab4aa9ffacba27"
     },
     "receiver-gallery.mp4": {
-      "bytes": 1090101,
-      "sha256": "c0ede1f976af9a06d445e867178c82d2bb7b77f6337122a85a5fc49334baf7d0"
+      "bytes": 615731,
+      "sha256": "6398e3c842e4b994508d29e18c66fe31884ae5804a1a1405d7cf358c79231ad3"
     },
     "receiver-gallery.gif": {
-      "bytes": 6784797,
-      "sha256": "0101cbeec098eeb6cc0b6c896e05e8dcf1c4f184bad2556e188e1bf33487bbc0"
+      "bytes": 4569966,
+      "sha256": "23fb2e5d2efa8038e58e816720545e43b5bac1a57bd0a51aeeb5894ff86a2bc7"
     },
     "paper-method.png": {
       "bytes": 353225,

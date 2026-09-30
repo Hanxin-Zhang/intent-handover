@@ -5,7 +5,7 @@
 | File | Content and source |
 | :--- | :--- |
 | `intent-handover.gif` / `.mp4` | Full Strategy screwdriver replay with a fixed right receiver, shown simultaneously from workspace and grasp-detail cameras. Rendered in the companion's laboratory scene using the same saved trajectory. |
-| `receiver-gallery.gif` / `.mp4` | Four A2 replays: can and screwdriver, each with a left and right receiver in the outward sampling region. |
+| `receiver-gallery.gif` / `.mp4` | Four A2 replays: can and screwdriver, each with a left and right receiver in the outward sampling region. Full-arm views show posture-reviewed examples from the seeded receiver bank. |
 | `cpu-selection.svg` | FS selections computed from the current bundled hammer, screwdriver and bottle scenes. |
 | `paper-method.png` | Fig. 2 extracted from the supplied Intent-Handover manuscript, also available on the [project website](https://robot-future.github.io/intent-handover/). |
 
