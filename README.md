@@ -28,9 +28,7 @@ Can and screwdriver · Left and right receivers · Fixed targets · A2 replay
 
 ### Try grasp selection on your CPU
 
-[![Bundled hammer, screwdriver and bottle grasp-selection demos](docs/media/cpu-selection.svg)](docs/quickstart.md)
-
-Three visual HTML reports, generated locally with one command. Inspect the selected grasp, aperture and candidate scores.
+Generate local reports for hammer, screwdriver and bottle with one command:
 
 ```bash
 intent-handover demo

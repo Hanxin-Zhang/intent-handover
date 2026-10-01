@@ -157,16 +157,6 @@
     "camera": "overview",
     "showcase_selection": "Posture-reviewed examples from the seeded receiver bank"
   },
-  "cpu": {
-    "kind": "bundled_procedural_geometry",
-    "strategy": "FS",
-    "objects": [
-      "hammer",
-      "screwdriver",
-      "bottle"
-    ],
-    "generator": "scripts/render_selection_overview.py"
-  },
   "paper": {
     "figure": 2,
     "source": "IROS26_3319_FI.pdf",
@@ -189,10 +179,6 @@
     "paper-method.png": {
       "bytes": 353225,
       "sha256": "4431a940dc124d411b51498ac4ded9a49f27a8ea0440eafc6b907160be973c23"
-    },
-    "cpu-selection.svg": {
-      "bytes": 37647,
-      "sha256": "0a8a9c1737072772a3d7fd8a13bd930150b7215d30600853e465462948ed9254"
     },
     "intent-handover.mp4": {
       "bytes": 134979,
